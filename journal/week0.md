@@ -42,4 +42,3 @@ I already have a lucidchart account so I just need to create a new diagram and s
 
 I created a diagram of the logical architecture of the project. You can find it in the [following link](https://lucid.app/documents/view/c8bd3f89-0566-420a-baad-8387c20bd052).
 ![Logical Architecture](../_docs/assets/logical-architecture.png)
-A
