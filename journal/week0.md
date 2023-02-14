@@ -40,4 +40,6 @@ I already have a lucidchart account so I just need to create a new diagram and s
 
 ### Create a lucidchart diagram of the project logical architecture
 
-I created a diagram of the logical architecture of the project. You can find it [here](https://lucid.app/lucidchart/invitations/accept/inv_8b1f1b1f-1f9a-4b1f-9f9a-1f9a4b1f9f9a?viewport_loc=-1%2C-1%2C-1%2C-1%2C0_0).
+I created a diagram of the logical architecture of the project. You can find it in the [following link](https://lucid.app/documents/view/c8bd3f89-0566-420a-baad-8387c20bd052).
+![Logical Architecture](../_docs/assets/logical-architecture.png)
+A
