@@ -12,6 +12,8 @@ This week we will be setting up our AWS account and getting familiar with the AW
 - [X] Create a Gitpod workspace
 - [X] Setup a lucidchart account
 - [X] Create a lucidchart diagram of the project logical architecture
+- [X] Create a Honeycomb account
+- [X] Create a Rollbar account
 
 ## Tasks
 
@@ -42,3 +44,11 @@ I already have a lucidchart account so I just need to create a new diagram and s
 
 I created a diagram of the logical architecture of the project. You can find it in the [following link](https://lucid.app/documents/view/c8bd3f89-0566-420a-baad-8387c20bd052).
 ![Logical Architecture](../_docs/assets/logical-architecture.png)
+
+### Create a Honeycomb account
+
+I created a Honeycomb account and created a workspace for the project called walterg.steven-gettingstarted.
+
+### Create a Rollbar account
+
+I created a Rollbar account using my Github account. After that I will just wait for further instructions. 
