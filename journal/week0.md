@@ -8,8 +8,11 @@ This week we will be setting up our AWS account and getting familiar with the AW
 
 - [X] Create an AWS account
 - [X] Create an AWS IAM user
+- [X] Create a billing alarm
+- [X] Create a budget
 - [X] Create a Github repository
 - [X] Create a Gitpod workspace
+- [X] Configure the AWS CLI
 - [X] Setup a lucidchart account
 - [X] Create a lucidchart diagram of the project logical architecture
 - [X] Create a Honeycomb account
@@ -24,8 +27,15 @@ Add the user to the `AdministratorAccess` group and create an access key for the
 Once it is created, we will need to configure the AWS CLI with the access key and secret key.
 ![AWS IAM User](../_docs/assets/iam-user.png)
 
+### Create a billing alarm
+
 After that we also need to create a billing alarm. This will send us an email when our account reaches a certain threshold. I am setting two different ones, the first one to alert me when I exceed the free tier, and the other one to not exceed the $100 treshold since I have some credits but they shouldn't exceed that amount.
 ![AWS Billing Alarm](../_docs/assets/billing.png)
+
+### Create a budget
+
+I also created two budgets to track my spending. I set the first to $0.01 to limit the free tier, and the second one to $100 and I will be notified when I reach 80% of that amount. I also set a notification to be sent to my email.
+![AWS Budget](../_docs/assets/budget.png)
 
 ### Create a Github repository
 
@@ -35,6 +45,18 @@ I already have a Github account so I just need to create a new repository from t
 
 I already have a Gitpod account so I just need to create a new workspace from the repository that I just created.
 ![Gitpod Workspace](../_docs/assets/gitpod.png)
+
+Also, it is necesary to create env files to store the aws credentials.
+![Gitpod Env Files](../_docs/assets/env-files.png)
+
+### Configure the AWS CLI
+
+To install the AWS CLI we need to add the following script in the `.gitpod.yml` file:
+```bash
+  - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  - unzip awscliv2.zip
+  - sudo ./aws/install
+```
 
 ### Setup a lucidchart account
 
