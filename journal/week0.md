@@ -29,8 +29,9 @@ Once it is created, we will need to configure the AWS CLI with the access key an
 
 ### Create a billing alarm
 
-After that we also need to create a billing alarm. This will send us an email when our account reaches a certain threshold. I am setting two different ones, the first one to alert me when I exceed the free tier, and the other one to not exceed the $100 treshold since I have some credits but they shouldn't exceed that amount.
+After that we also need to create a billing alarm. This will send us an email when our account reaches a certain threshold. This is done following the steps stated in the [AWS bootcamp Cruddr - Week 0 ](https://github.com/omenking/aws-bootcamp-cruddur-2023/blob/week-0/journal/week0.md) using the AWS CLI
 ![AWS Billing Alarm](../_docs/assets/billing.png)
+![AWS alarm](../_docs/assets/alarm.png)
 
 ### Create a budget
 
