@@ -10,7 +10,7 @@ This week we will be setting up our AWS account and getting familiar with the AW
 - [X] Create an AWS IAM user
 - [X] Create a billing alarm
 - [X] Create a budget
-- [X] Create a Github repository
+- [X] Create a GitHub repository
 - [X] Create a Gitpod workspace
 - [X] Configure the AWS CLI
 - [X] Setup a lucidchart account
@@ -61,7 +61,7 @@ To install the AWS CLI we need to add the following script in the `.gitpod.yml` 
 
 ### Setup a lucidchart account
 
-I already have a lucidchart account so I just need to create a new diagram and start adding the components of the project.
+I already have a lucidchart account![img.png](img.png), so I just need to create a new diagram and start adding the components of the project.
 
 ### Create a lucidchart diagram of the project logical architecture
 
