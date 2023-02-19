@@ -65,8 +65,11 @@ I already have a lucidchart account![img.png](img.png), so I just need to create
 
 ### Create a lucidchart diagram of the project logical architecture
 
-I created a diagram of the logical architecture of the project. You can find it in the [following link](https://lucid.app/documents/view/c8bd3f89-0566-420a-baad-8387c20bd052).
+I created a diagram of the logical architecture of the project. You can find it in the [following link](https://lucid.app/lucidchart/c8bd3f89-0566-420a-baad-8387c20bd052/edit?viewport_loc=-141%2C-23%2C2172%2C1028%2CYDMyL5bVe82H&invitationId=inv_8aa863b8-cee7-4e59-8aa6-2c73428c3fd7).
 ![Logical Architecture](../_docs/assets/logical-architecture.png)
+
+This is the Diagram for the conceptual architecture of the project. You can find it in the [following link](https://lucid.app/lucidchart/c8bd3f89-0566-420a-baad-8387c20bd052/edit?viewport_loc=130%2C-61%2C2931%2C1387%2C0_0&invitationId=inv_8aa863b8-cee7-4e59-8aa6-2c73428c3fd7).
+![Conceptual Architecture](../_docs/assets/conceptual-architecture.png)
 
 ### Create a Honeycomb account
 
