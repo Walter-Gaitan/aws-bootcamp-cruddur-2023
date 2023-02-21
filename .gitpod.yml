@@ -1,3 +1,4 @@
+# Learn more from ready-to-use templates: https://www.gitpod.io/docs/introduction/getting-started/quickstart
 tasks:
   - name: aws-cli
     env:
@@ -22,4 +23,4 @@ vscode:
     - 42Crunch.vscode-openapi
     - amazonwebservices.aws-toolkit-vscode
     - ms-azuretools.vscode-docker
-    
+    - cweijan.vscode-postgresql-client2
