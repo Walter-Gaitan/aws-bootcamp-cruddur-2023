@@ -52,9 +52,7 @@ EXPOSE ${PORT}
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567"]
 ```
 
-To make sure the notification feature backend works, we just need to run the command `docker build -t backend-flask .` to build the container and then `docker run backend-flask` to run the container. Once it’s created, we need to make the port public so we can use it on the web browser.
-
-// add image
+To make sure the notification feature backend works, we just need to run the command `docker build -t backend-flask .` to build the container and then `docker run backend-flask` to run the container. Once it’s created, we need to make the port public, so we can use it on the web browser.
 
 ### Create notification feature frontend
 
@@ -74,7 +72,7 @@ CMD ["npm", "start"]
 
 To test that the frontend works we need to run `docker build -t frontend-react-js .` to build the container and then `docker run -p 3000:3000 frontend-react-js` to run the container. Once it’s created, we can go to our ports and make it public, then we can access the URL in the web browser.
 
-// add image
+![frontend](../_docs/assets/frontend.png)
 
 ### Create a docker compose file
 
@@ -140,6 +138,8 @@ volumes:
 Once we have created the docker-compose.yml file, we can run it using the command `docker-compose up`  . This will build and start both containers and allow them to communicate with each other.
 
 With this setup, we can easily manage and deploy the entire application as a single unit, making it more efficient and easier to maintain.
+
+![cruddr](../_docs/assets/cruddr.png)
 
 ### Show containers information
 
