@@ -1,8 +1,11 @@
 tasks:
   - init: yarn install
     command: echo "Done."
-  - name: aws-cli
-    init: sh aws.sh
+  - name: Install AWS CLI
+    command: |
+      gp sync-await env-setup
+      ./install-aws-cli.sh
+      gp sync-done aws-cli
   - name: postgres
     init: |
       curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
