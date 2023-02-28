@@ -17,6 +17,3 @@ ports:
   - name: xray-daemon
     port: 2000
     visibility: public
-
-image:
-  file: .gitpod.Dockerfile
