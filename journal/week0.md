@@ -61,7 +61,7 @@ To install the AWS CLI we need to add the following script in the `.gitpod.yml` 
 
 ### Setup a lucidchart account
 
-I already have a lucidchart account![img.png](img.png), so I just need to create a new diagram and start adding the components of the project.
+I already have a lucidchart account![img.png](../_docs/assets/img.png), so I just need to create a new diagram and start adding the components of the project.
 
 ### Create a lucidchart diagram of the project logical architecture
 
