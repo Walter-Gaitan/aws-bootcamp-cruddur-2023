@@ -32,6 +32,21 @@ After doing that, if you go to the Traces section, you will see the traces for t
 
 ### Task 2 — Setup Xray
 
+We need to make sure that Xray is installed in the program. You can follow the instructions in the Week 2 documentation from the [Bootcamp repository](https://github.com/omenking/aws-bootcamp-cruddur-2023/blob/week-2/journal/week2.md).
+
+In my case, instead of using:
+```shell
+export AWS_REGION="ca-central-1"
+gp env AWS_REGION="ca-central-1"
+```
+
+I used
+```shell
+export AWS_REGION="us-east-2"
+gp env AWS_REGION="us-east-2"
+```
+
+
 ## Homework
 
 ## References
