@@ -10,3 +10,5 @@ RUN sudo apt update \
     && sudo add-apt-repository ppa:deadsnakes/ppa -y \
     && sudo apt update \
     && sudo apt install -y python3.11 \
+    && sudo apt install python3-pip \
+    sudo apt-get install npm
