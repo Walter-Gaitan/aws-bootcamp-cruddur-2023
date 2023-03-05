@@ -7,8 +7,9 @@ In this week we will be looking at distributed tracing. We will be looking at ho
 ## Requirements
 
 [X] Have a Honeycomb account
-[] Xray installed on your machine
-[] Setup AWS CLoudwatch on the application
+[X] Xray installed on your machine
+[X] Setup AWS CLoudwatch on the application
+[X] Have a Rollbar account
 
 ## Tasks
 
@@ -30,7 +31,7 @@ Then we need to perform a query to get traces. Click on `New Query` and then sel
 After doing that, if you go to the Traces section, you will see the traces for the request you just made. You can click on the trace and see the details of the request.
 ![Trace](../_docs/assets/trace.png)
 
-### Task 2 — Setup Xray
+### Task 2 — Setup Xray on the application
 
 We need to make sure that Xray is installed in the program. You can follow the instructions in the Week 2 documentation from the [Bootcamp repository](https://github.com/omenking/aws-bootcamp-cruddur-2023/blob/week-2/journal/week2.md).
 
@@ -45,6 +46,89 @@ I used
 export AWS_REGION="us-east-2"
 gp env AWS_REGION="us-east-2"
 ```
+
+After that, we need to make sure that Xray is enabled in the application. You can do this by adding the following lines to the `app.py` file:
+```python
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
+
+xray_url = os.getenv("AWS_XRAY_URL")
+xray_recorder.configure(service='Cruddur', dynamic_naming=xray_url)
+XRayMiddleware(app, xray_recorder)
+```
+
+We also need to add the following to the requirements.txt file:
+```
+aws-xray-sdk
+```
+
+Once that is done, we can start the application and make a request to it. You should see the request in the Xray dashboard.
+![Xray](../_docs/assets/xray.png)
+
+![traces](../_docs/assets/traces.png)
+
+### Task 3 — Setup Cloudwatch
+
+We need to make sure that Cloudwatch is installed in the program. You can follow the instructions in the Week 2 documentation from the [Bootcamp repository](https://github.com/omenking/aws-bootcamp-cruddur-2023/blob/week-2/journal/week2.md).
+
+Following the instructions, we see that we need to add the ACCESS KEY and SECRET KEY to the application in Docker Compose, add `watchtower` to the requirements.txt file, and add the following to the `app.py` file:
+```python
+import watchtower
+import logging
+from time import strftime
+
+# Configuring Logger to Use CloudWatch
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
+console_handler = logging.StreamHandler()
+cw_handler = watchtower.CloudWatchLogHandler(log_group='cruddur')
+LOGGER.addHandler(console_handler)
+LOGGER.addHandler(cw_handler)
+LOGGER.info("some message")
+@app.after_request
+def after_request(response):
+    timestamp = strftime('[%Y-%b-%d %H:%M]')
+    LOGGER.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
+    return response
+```
+
+After that, we can start the application and make a request to it. You should see the request in the Cloudwatch dashboard.
+![Cloudwatch](../_docs/assets/cloudwatch.png)
+
+We also need to modify the `home_activities.py` file to add the following lines:
+```python
+
+tracer = trace.get_tracer("home.activities")
+
+class HomeActivities:
+  def run(Logger):
+    Logger.info("HomeActivities")
+```
+
+I personally had some issues with `home_activities.py` since I was getting a NameError. I fixed this by changing the line 8 from:
+```python
+logger.info("HomeActivities")
+```
+To:
+```python
+Logger.info("HomeActivities")
+```
+
+Once I used Capital L, it worked and started getting a JSON response.
+
+And the `app.py` file to add the following lines:
+```python
+@app.route("/api/activities/home", methods=['GET'])
+def data_home():
+  data = HomeActivities.run(Logger=LOGGER)
+  return data, 200
+  ```
+
+Finally, I checked that the logs were showing the messages I added in the `app.py` file.
+![Logs](../_docs/assets/logs.png)
+
+### Task 4 — Setup Rollbar
+
 
 
 ## Homework
