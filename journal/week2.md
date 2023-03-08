@@ -129,8 +129,53 @@ Finally, I checked that the logs were showing the messages I added in the `app.p
 
 ### Task 4 — Setup Rollbar
 
+After following the video from [Andrew Brown](https://www.youtube.com/watch?v=xMBDAb5SEU4&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=37)
+I was able to setup Rollbar and get the errors in the dashboard just by adding the following lines to the `app.py` file:
+```python
+import rollbar
+import rollbar.contrib.flask
+from flask import got_request_exception
+```
+```python
+rollbar_access_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
+@app.before_first_request
+def init_rollbar():
+    """init rollbar module"""
+    rollbar.init(
+        # access token
+        rollbar_access_token,
+        # environment name
+        'production',
+        # server root directory, makes tracebacks prettier
+        root=os.path.dirname(os.path.realpath(__file__)),
+        # flask already sets up logging
+        allow_logging_basic_config=False)
 
+    # send exceptions from `app` to rollbar, using flask's signal system.
+    got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
+```
+```python
+@app.route('/rollbar/test')
+def rollbar_test():
+    rollbar.report_message('Hello World!', 'warning')
+    return "Hello World!"
+```
+
+I also added the following to the `docker-compose.yml` file:
+```yaml
+ROLLBAR_ACCESS_TOKEN: "${ROLLBAR_ACCESS_TOKEN}"
+```
+Finally, I successfully got the errors in the Rollbar dashboard.
+![Rollbar](../_docs/assets/Rollbar.png)
+![TypeError](../_docs/assets/typeerror.png)
 
 ## Homework
 
-## References
+### Task 1 - Run custom queries in Honeycomb and save them later eg. Latency by UserID, Recent Traces
+
+I created a query to get a HEATMAP of the traces GROUPED BY the `trace_id`.
+![Heatmap](../_docs/assets/heatmap.png)
+
+Also, I created a query to check the average duration grouped by the `trace_id`.
+![Average Duration](../_docs/assets/average_duration.png)
+
