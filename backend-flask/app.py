@@ -114,7 +114,7 @@ def init_rollbar():
 
 @app.route('/rollbar/test')
 def rollbar_test():
-    rollbar.report_message('Hello World!', 'warning')
+    rollbar.report_message('Hello World!', 'info')
     return "Hello World!"
 
 @app.route("/api/message_groups", methods=['GET'])
