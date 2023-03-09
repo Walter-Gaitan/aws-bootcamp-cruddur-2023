@@ -169,6 +169,71 @@ Finally, I successfully got the errors in the Rollbar dashboard.
 ![Rollbar](../_docs/assets/Rollbar.png)
 ![TypeError](../_docs/assets/typeerror.png)
 
+### Task 5 — Setup Xray subsegment
+
+I added the following lines to the `app.py` file starting at Line 155:
+```python
+@app.route("/api/activities/home", methods=['GET'])
+@xray_recorder.capture('activities_home')
+def data_home():
+  data = HomeActivities.run(Logger=LOGGER)
+  return data, 200
+
+@app.route("/api/activities/@<string:handle>", methods=['GET'])
+@xray_recorder.capture('activities_users')
+def data_handle(handle):
+
+@app.route("/api/activities/<string:activity_uuid>", methods=['GET'])
+@xray_recorder.capture('activities_show')
+def data_show_activity(activity_uuid):
+  data = ShowActivity.run(activity_uuid=activity_uuid)
+  return data, 200
+
+```
+
+Added the following to `user_activities.py` file:
+```python
+from datetime import datetime, timedelta, timezone
+from aws_xray_sdk.core import xray_recorder
+class UserActivities:
+  def run(user_handle):
+    try:
+      model = {
+        'errors': None,
+        'data': None
+      }
+
+      now = datetime.now(timezone.utc).astimezone()
+      
+      if user_handle == None or len(user_handle) < 1:
+        model['errors'] = ['blank_user_handle']
+      else:
+        now = datetime.now()
+        results = [{
+          'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
+          'handle':  'Andrew Brown',
+          'message': 'Cloud is fun!',
+          'created_at': (now - timedelta(days=1)).isoformat(),
+          'expires_at': (now + timedelta(days=31)).isoformat()
+        }]
+        model['data'] = results
+
+      subsegment = xray_recorder.begin_subsegment('mock-data')
+      # xray ---
+      dict = {
+        "now": now.isoformat(),
+        "results-size": len(model['data'])
+      }
+      subsegment.put_metadata('key', dict, 'namespace')
+      xray_recorder.end_subsegment()
+    finally:  
+    #  # Close the segment
+      xray_recorder.end_subsegment()
+    return model
+```
+Once done, we can see the changes in the Xray dashboard.
+![subsegment](../_docs/assets/subsegment.png)
+
 ## Homework
 
 ### Task 1 - Run custom queries in Honeycomb and save them later eg. Latency by UserID, Recent Traces
