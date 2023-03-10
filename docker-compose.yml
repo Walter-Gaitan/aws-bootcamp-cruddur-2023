@@ -21,6 +21,11 @@ services:
   frontend-react-js:
     environment:
       REACT_APP_BACKEND_URL: "https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+      REACT_AWS_PROJECT_REGION: "${AWS_DEFAULT_REGION}"
+      REACT_APP_AWS_COGNITO_REGION: "${AWS_DEFAULT_REGION}"
+      REACT_APP_AWS_USER_POOLS_ID: "us-east-2_fqmDeffl2"
+      REACT_APP_CLIENT_ID: "2dlm1cmuu0ugqummid2nh6vaod"
+
     build: ./frontend-react-js
     ports:
       - "3000:3000"
@@ -38,7 +43,7 @@ services:
       - 2000:2000/udp
   db:
     image: postgres:13-alpine
-    restart: always
+    restart: always 
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
