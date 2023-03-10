@@ -15,7 +15,7 @@ export default function DesktopNavigation(props) {
     button = <CrudButton setPopped={props.setPopped} />;
     profile = <ProfileInfo user={props.user} />;
     notificationsLink = <DesktopNavigationLink 
-      url="/notifications"
+      url="/notifications" 
       name="Notifications" 
       handle="notifications" 
       active={props.active} />;
