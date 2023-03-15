@@ -18,7 +18,7 @@ article.signin-article {
 }
 
 article.signin-article .signin-wrapper {
-  background: #202124;
+  background: var(--bg);
   width: 760px;
   display: flex;
   padding-top: 120px;
@@ -48,7 +48,7 @@ article.signin-article input[type='password'] {
   width: 100%;
   padding: 16px;
   border: solid 1px #555555;
-  background: #1f1f1f;
+  background: var(--fg);
   color: #fff;
 }
 
@@ -93,7 +93,7 @@ article.signin-article button[type='submit'] {
 }
 
 .dont-have-an-account {
-  background: #252525;
+  background:var(--fg);
   padding: 24px;
   color: rgba(255,255,255,0.6);
   gap: 8px;
