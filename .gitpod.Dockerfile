@@ -6,10 +6,11 @@ RUN cd /workspace \
     && sudo /workspace/aws/install
 
 RUN sudo apt update \
+    && sudo apt install npm -y \
     && sudo apt install -y apt-utils --no-install-recommends apt-utils \
     && sudo add-apt-repository ppa:deadsnakes/ppa -y \
     && sudo apt update \
     && sudo apt install -y python3.11 
 
-RUN sudo apt install npm \
+RUN  \
     && sudo apt update
