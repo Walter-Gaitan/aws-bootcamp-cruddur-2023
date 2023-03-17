@@ -11,5 +11,5 @@ RUN sudo apt update \
     && sudo apt update \
     && sudo apt install -y python3.11 
 
-RUN sudo apt get install npm \
+RUN sudo apt install npm \
     && sudo apt update
