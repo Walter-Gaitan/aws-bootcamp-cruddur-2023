@@ -12,6 +12,7 @@ This week we will be learning about Postgres and RDS. We will be using Amazon RD
 ## Requirements
 
 - [X] Amazon RDS Postgres Database
+- [X] Postgres installed on the CLI
 - 
 ## Tasks
 
@@ -57,3 +58,129 @@ Once you are done with the connection, remember to delete the database, because 
 
 Since there is no data on the database, no snapshot is created. So the options selected are as shown below:
 ![Delete Database](../_docs/assets/delete_database.png)
+
+### Create a CRUD application using AWS
+
+Following the session for the Week 4, we start by creating a RDS using the CLI. To do so, we need to follow the next steps:
+- Create a VPC
+- Create a subnet group
+- Create a security group
+- Create an RDS instance
+
+To create a VPC, we need to follow the next steps:
+- If you do not have a default VPC, just run the following command:
+```bash
+aws ec2 create-default-vpc
+```
+- Once you run the command, default subnets will also be created. To check if the default VPC was created, run the following command:
+```bash
+aws ec2 describe-vpcs
+```
+
+To create a subnet group, we need to follow the next steps:
+- Run the following command:
+```bash
+aws rds create-db-subnet-group --db-subnet-group-name subnet-group-1 --db-subnet-group-description "Subnet group 1" --subnet-ids subnet-0a1b2c3d4e5f6g7h8 subnet-0a1b2c3d4e5f6g7h9
+```
+- To check if the subnet group was created, run the following command:
+```bash
+aws rds describe-db-subnet-groups
+```
+
+To create an RDS instance, we need to follow the next steps:
+- Run the following command:
+```bash
+aws rds create-db-instance \
+  --db-instance-identifier cruddur-db-instance \
+  --db-instance-class db.t3.micro \
+  --engine postgres \
+  --engine-version  14.6 \
+  --master-username root \
+  --master-user-password ${MASTER_PASSWORD} \
+  --allocated-storage 20 \
+  --availability-zone us-east-2a \
+  --backup-retention-period 0 \
+  --port 5432 \
+  --no-multi-az \
+  --db-name cruddur \
+  --storage-type gp2 \
+  --publicly-accessible \
+  --storage-encrypted \
+  --enable-performance-insights \
+  --performance-insights-retention-period 7 \
+  --no-deletion-protection
+```
+
+For security reasons, I am not going to show the password. However, you can use your own password. To add the password without modifying the command, you can run the following command in the CLI:
+```bash
+export MASTER_PASSWORD=your_password
+gp env MASTER_PASSWORD=your_password
+```
+
+- To check if the RDS instance was created, run the following command:
+```bash
+aws rds describe-db-instances
+```
+
+In previous weeks, postgres was already set up. However, if not, it is necessary to go to the docker-compose and add the following lines:
+```yaml
+  db:
+    image: postgres:13.5-alpine
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+    volumes:
+      - ./db:/var/lib/postgresql/data
+```
+
+To avoid spending in the RDS, we need to stop it temporarily. To do so, we need to follow the next steps:
+- Go to your RDS instance
+- Click on `Actions`
+- Click on `Stop Temporarily`
+- Acknowledge the message
+![Stop RDS](../_docs/assets/stop_rds.png)
+
+To connect to the local database, we need to follow the next steps:
+- Run the docker-compose
+- Run the following command:
+```bash
+psql -Upostgres --host localhost
+```
+- Create the database
+```sql
+CREATE DATABASE cruddur;
+```
+- Use the command `\l` to show the databases
+- Add schema to `schema.sql` file inside the `db` folder
+```sql
+CREATE TABLE public.users (
+  uuid UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  display_name text,
+  handle text,
+  cognito_user_id text,
+  created_at TIMESTAMP default current_timestamp NOT NULL
+);
+
+CREATE TABLE public.activities (
+  uuid UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  message text NOT NULL,
+  replies_count integer DEFAULT 0,
+  reposts_count integer DEFAULT 0,
+  likes_count integer DEFAULT 0,
+  reply_to_activity_uuid integer,
+  expires_at TIMESTAMP,
+  created_at TIMESTAMP default current_timestamp NOT NULL
+);
+```
+
+### Create scripts to set up and create the database
+
+To create the scripts, we need to follow the next steps:
+- Create a folder called `bin`
+- Create the files `db-create`, `db-drop`, `db-schema-load`
+- Copy the content of the files from the repository
+
+
