@@ -182,5 +182,56 @@ To create the scripts, we need to follow the next steps:
 - Create a folder called `bin`
 - Create the files `db-create`, `db-drop`, `db-schema-load`
 - Copy the content of the files from the repository
+- Finally, create a file called `db-setup` to run the scripts in the correct order
+
+### Add a schema to the database
+
+To add a schema to the database, we need to follow the next steps:
+- Create a folder called `db`
+- Create a file called `schema.sql`
+- Add the following content:
+```sql
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+DROP TABLE IF EXISTS public.users;
+DROP TABLE IF EXISTS public.activities;
 
 
+CREATE TABLE public.users (
+  uuid UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  display_name text,
+  handle text,
+  cognito_user_id text,
+  created_at TIMESTAMP default current_timestamp NOT NULL
+);
+
+CREATE TABLE public.activities (
+  uuid UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_uuid UUID NOT NULL,
+  message text NOT NULL,
+  replies_count integer DEFAULT 0,
+  reposts_count integer DEFAULT 0,
+  likes_count integer DEFAULT 0,
+  reply_to_activity_uuid integer,
+  expires_at TIMESTAMP,
+  created_at TIMESTAMP default current_timestamp NOT NULL
+);
+```
+- Add a new folder called `db` to store `db.py` and `cognito_jwt_token.py`
+- Modify the `app.py` file and `home_activities.py` file to use the database
+
+### Connect to the local database
+
+To connect to the local database, we need to follow the next steps:
+- Run the docker-compose
+- Run db-setup by using the following command:
+```bash
+cd backend-flask && ./bin/db-setup
+```
+- Connect to the database by using the following command:
+```bash
+./bin/db-connect
+```
+The following image shows the result of the command:
+![Connect to the database](../_docs/assets/connect_to_db.png)
+
+## 
