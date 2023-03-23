@@ -8,6 +8,16 @@
             "database": "cruddur",
             "username": "postgres",
             "name": "cruddur"
+        },
+        {
+            "previewLimit": 50,
+            "server": "cruddur-db-instance.ccucok9mky4v.us-east-2.rds.amazonaws.com",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "Prod",
+            "database": "cruddur",
+            "username": "root",
+            "password": "VzCRnJoJxS2QBxsbbg4u"
         }
     ]
 }
