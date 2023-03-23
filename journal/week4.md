@@ -234,4 +234,43 @@ cd backend-flask && ./bin/db-setup
 The following image shows the result of the command:
 ![Connect to the database](../_docs/assets/connect_to_db.png)
 
-## 
+### Create an SG rule to allow access to the production database
+- Go to the security group of the RDS instance
+- Click on `Inbound`
+- Click on `Edit`
+- Click on `Add Rule`
+- Add the following rule: `Type: Postgres, Source: My IP`
+- Click on `Save Rules`
+- Click on `Close`
+![Add rule to the SG](../_docs/assets/add_rule_to_sg.png)
+- Create an `rds-update-sg-rule` in `bin` folder to update the security group rule
+- Add the following content to the file:
+```bash
+#! /usr/bin/bash
+
+CYAN='\033[1;36m'
+NO_COLOR='\033[0m'
+LABEL="rds-update-sg-rule"
+printf "${CYAN}==== ${LABEL}${NO_COLOR}\n"
+
+aws ec2 modify-security-group-rules \
+    --group-id $DB_SG_ID \
+    --security-group-rules "SecurityGroupRuleId=$DB_SG_RULE_ID,SecurityGroupRule={Description=GITPOD,IpProtocol=tcp,FromPort=5432,ToPort=5432,CidrIpv4=$GITPOD_IP/32}"
+```
+- Add the following content to the `db-connect` file:
+```bash
+#! /usr/bin/bash
+if [ "$1" = "prod" ]; then
+  echo "Running in production mode"
+  URL=$PROD_CONNECTION_URL
+else
+  URL=$CONNECTION_URL
+fi
+
+psql $URL
+```
+
+With this, you should be able to connect to the production database and if it doesn't work, connect to the local development database.
+
+### Create a post-confirmation lambda function
+
