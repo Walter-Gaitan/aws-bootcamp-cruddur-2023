@@ -50,7 +50,7 @@ class CreateActivity:
     return model
 
   def create_activity(handle, message, expires_at):
-    sql = db.template('activities','create')
+    sql = db.template('create')
     uuid = db.query_commit(sql,{
       'handle': handle,
       'message': message,
