@@ -274,3 +274,190 @@ With this, you should be able to connect to the production database and if it do
 
 ### Create a post-confirmation lambda function
 
+First, we need to create a lambda function to add the user to the database. To do so, we need to follow the next steps:
+- Go to the AWS console
+- Click on `Lambda`
+- Click on `Create function`
+- Click on `Author from scratch`
+- Select `Python 3.8` as the runtime
+- Create a file named `lambda_post_confirmation.py` in the `aws/lambda` folder
+- Add the following code:
+```python
+import json
+import psycopg2
+import os
+
+def lambda_handler(event, context):
+    user = event['request']['userAttributes']
+    print('userAttributes')
+    print(user)
+
+    user_display_name  = user['name']
+    user_email         = user['email']
+    user_handle        = user['preferred_username']
+    user_cognito_id    = user['sub']
+    try:
+      print('entered-try')
+      sql = f"""
+         INSERT INTO public.users (
+          display_name, 
+          email,
+          handle, 
+          cognito_user_id
+          ) 
+        VALUES(%s,%s,%s,%s)
+      """
+      print('SQL Statement ----')
+      print(sql)
+      conn = psycopg2.connect(os.getenv('CONNECTION_URL'))
+      cur = conn.cursor()
+      params = [
+        user_display_name,
+        user_email,
+        user_handle,
+        user_cognito_id
+      ]
+      cur.execute(sql,*params)
+      conn.commit() 
+
+    except (Exception, psycopg2.DatabaseError) as error:
+      print(error)
+    finally:
+      if conn is not None:
+          cur.close()
+          conn.close()
+          print('Database connection closed.')
+    return event
+```
+- Copy the content of the `lambda_post_confirmation.py` file to the AWS console
+- Click on `Deploy`
+- Click on `Configuration` and then `Environment variables`
+- Add the following environment variables:
+  - `CONNECTION_URL`: `postgres://postgres:postgres@localhost:5432/cruddur`
+- Click on `Save`
+- Click on `Add trigger`
+- Click on `Permissions`
+- Click on `Role name`
+- Click on `Add Permissions` and then `Attach policies`
+- Add the following policy `AWSLambdaVPCAccessExecutionRole`
+- Create a new policy by clicking on `Create policy`
+- Click on `JSON`
+- Add the following content:
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:CreateNetworkInterface",
+                "ec2:DeleteNetworkInterface",
+              "ec2:AttachNetworkInterface"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+- Click on `Review policy`
+- Add a name and a description
+- Click on `Create policy`
+![Create policy](../_docs/assets/create_policy.png)
+- Attach the new policy to the lambda function
+- Add a lambda layer
+- Select Specify an ARN
+- Add the following ARN: `arn:aws:lambda:us-east-2:770693421928:layer:psycopg2-py38:1`
+- In `Configuration`, select `VPC` and add the lambda function to the same VPC as the RDS instance, the same subnets and the same security group
+![Add lambda to the VPC](../_docs/assets/add_lambda_to_vpc.png)
+
+### Add Lambda trigger to the Cognito user pool
+- Click on `Cognito`
+- Click on `Manage User Pools`
+- Click on `cruddur`
+- Click on `User pool properties`
+- Click on `Add a Lambda trigger`
+- Select `Post confirmation`
+- Select `lambda_post_confirmation`
+- Click on `Save triggers`
+
+### Create new activities with a database insert
+
+To create new activities, we need to follow the next steps:
+- Go to `backend-flask/services`
+- Modify the `home_activities.py` file to use the database
+- Modify the `create_activity` function to use the database
+- Modify `db/db.py` and refactor it
+
+### Modify the lambda function 
+- Modify the `cruddur_post_confirmation.py` file to use the database with the following code:
+```python
+import json
+import psycopg2
+import os
+
+def lambda_handler(event, context):
+    user = event['request']['userAttributes']
+    print('userAttributes')
+    print(user)
+
+    user_display_name  = user['name']
+    user_email         = user['email']
+    user_handle        = user['preferred_username']
+    user_cognito_id    = user['sub']
+    try:
+      print('entered-try')
+      sql = f"""
+         INSERT INTO public.users (
+          display_name, 
+          email,
+          handle, 
+          cognito_user_id
+          ) 
+        VALUES(%s,%s,%s,%s)
+      """
+      print('SQL Statement ----')
+      print(sql)
+      conn = psycopg2.connect(os.getenv('CONNECTION_URL'))
+      cur = conn.cursor()
+      params = [
+        user_display_name,
+        user_email,
+        user_handle,
+        user_cognito_id
+      ]
+      cur.execute(sql,*params)
+      conn.commit() 
+
+    except (Exception, psycopg2.DatabaseError) as error:
+      print(error)
+    finally:
+      if conn is not None:
+          cur.close()
+          conn.close()
+          print('Database connection closed.')
+    return event
+```
+- This one is optional, but to make it more aligned with my repository, there is one line in `app.py` that needs to be modified in line 209:
+```python
+  user_handle  = 'andrewbrown'
+```
+- Change it to:
+```python
+  user_handle  = user['preferred_username']
+```
+This will make sure that the user handle is the one used in the Cognito user pool.
+- After making all necessary changes, it is time to try our first CruDDur activity. To do so, we need to follow the next steps:
+- Sign in to the application
+- Click on `Crud`
+- Post any message in the `What would you like to say?` field
+![Create activity](../_docs/assets/create_activity.png)
+
+## Homework
+
+For this week homework, I decided to watch the following content:
+- [you need to learn SQL RIGHT NOW!! (SQL Tutorial for Beginners)](https://www.youtube.com/watch?v=xiUTqnI6xk8)
+- I also decided to take the course [Unit: Intro to SQL: Querying and managing data
+  ](https://www.khanacademy.org/computing/computer-programming/sql) from Khan Academy. I learned a lot from this course, mostly because I was able to practice SQL queries and I was able to see the results in real time. I also learned how to use the `JOIN` statement, which is very useful when you need to query data from multiple tables.
+
