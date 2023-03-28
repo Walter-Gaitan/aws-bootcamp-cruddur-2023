@@ -14,11 +14,11 @@
             "previewLimit": 50,
             "server": "localhost",
             "port": 5432,
-            "askForPassword": true,
             "driver": "PostgreSQL",
             "database": "cruddur",
             "username": "postgres",
-            "name": "cruddur"
+            "name": "cruddur",
+            "password": "password"
         }
     ]
 }
