@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set variables
-BIN_PATH="$(realpath .)/bin"
+BIN_PATH="$(realpath .)"
 DB_PATH="$BIN_PATH/db"
 DDB_PATH="$BIN_PATH/ddb"
 
@@ -10,7 +10,7 @@ if source "$DB_PATH/setup"; then
   # Load schema and seed data if setup was successful
   source "$DDB_PATH/schema-load"
   source "$DDB_PATH/seed"
-  ./$DDB_PATH/update_cognito_users_ids
+  ./"$DDB_PATH"/update_cognito_users_ids
 else
   # If setup failed, print error message and exit script
   echo "Error running db setup. Schema load and seed will not be executed."

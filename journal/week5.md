@@ -1,7 +1,5 @@
 # Week 5 — DynamoDB and Serverless Caching
 
-## Pre-requisites
-
 ## Table of Contents
 
 - [X] Watched Week 5 - Data Modelling (Live Stream)
