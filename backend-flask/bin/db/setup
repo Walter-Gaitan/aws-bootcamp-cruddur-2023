@@ -8,18 +8,8 @@ printf "${CYAN}==== ${LABEL}${NO_COLOR}\n"
 
 bin_path="$(realpath .)/bin"
 
-if [[ $(psql -U postgres -h localhost -lqt | cut -d \| -f 1 | grep -wq "cruddur") ]]; then
-  echo "Database already exists, skipping drop"
-else
-  source "$bin_path/db/drop"
-fi
-
+source "$bin_path/db/drop"
 source "$bin_path/db/create"
-
-if [[ $(psql -U postgres -h localhost -lqt | cut -d \| -f 1 | grep -wq "cruddur") ]]; then
-  echo "Database exists, running schema load and seed"
-  source "$bin_path/ddb/schema-load"
-  source "$bin_path/ddb/seed"
-else
-  echo "Database not found, skipping schema load and seed"
-fi
+source "$bin_path/db/schema-load"
+source "$bin_path/db/seed"
+source "$bin_path/db/update_cognito_user_ids"
