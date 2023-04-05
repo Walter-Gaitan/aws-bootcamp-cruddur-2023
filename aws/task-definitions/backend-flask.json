@@ -14,7 +14,7 @@
         {
           "name": "backend-flask",
           "containerPort": 4567,
-          "protocol": "tcp",
+          "protocol": "tcp", 
           "appProtocol": "http"
         }
       ],
@@ -29,10 +29,10 @@
       "environment": [
         {"name": "OTEL_SERVICE_NAME", "value": "backend-flask"},
         {"name": "OTEL_EXPORTER_OTLP_ENDPOINT", "value": "https://api.honeycomb.io"},
-        {"name": "AWS_COGNITO_USER_POOL_ID", "value": ""},
-        {"name": "AWS_COGNITO_USER_POOL_CLIENT_ID", "value": ""},
-        {"name": "FRONTEND_URL", "value": ""},
-        {"name": "BACKEND_URL", "value": ""},
+        {"name": "AWS_COGNITO_USER_POOL_ID", "value": "us-east-2_W3jYYMQEj"},
+        {"name": "AWS_COGNITO_USER_POOL_CLIENT_ID", "value": "2co3nkd0rqprebc57hdqr3hrbh"},
+        {"name": "FRONTEND_URL", "value": "*"},
+        {"name": "BACKEND_URL", "value": "*"},
         {"name": "AWS_DEFAULT_REGION", "value": "us-east-2"}
       ],
       "secrets": [
@@ -41,7 +41,7 @@
         {"name": "CONNECTION_URL"       , "valueFrom": "arn:aws:ssm:AWS_REGION:AWS_ACCOUNT_ID:parameter/cruddur/backend-flask/CONNECTION_URL" },
         {"name": "ROLLBAR_ACCESS_TOKEN" , "valueFrom": "arn:aws:ssm:AWS_REGION:AWS_ACCOUNT_ID:parameter/cruddur/backend-flask/ROLLBAR_ACCESS_TOKEN" },
         {"name": "OTEL_EXPORTER_OTLP_HEADERS" , "valueFrom": "arn:aws:ssm:AWS_REGION:AWS_ACCOUNT_ID:parameter/cruddur/backend-flask/OTEL_EXPORTER_OTLP_HEADERS" }
-
+        
       ]
     }
   ]
