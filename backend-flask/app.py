@@ -136,8 +136,8 @@ def data_message_groups():
   access_token = extract_access_token(request.headers)
   try:
     claims = cognito_jwt_token.verify(access_token)
-    # authenicatied request
-    app.logger.debug("authenicated")
+    # authenticated request
+    app.logger.debug("authenticated")
     app.logger.debug(claims)
     cognito_user_id = claims['sub']
     model = MessageGroups.run(cognito_user_id=cognito_user_id)
@@ -146,7 +146,7 @@ def data_message_groups():
     else:
       return model['data'], 200
   except TokenVerifyError as e:
-    # unauthenicatied request
+    # unauthenticated request
     app.logger.debug(e)
     return {}, 401
 
@@ -156,8 +156,8 @@ def data_messages(message_group_uuid):
   access_token = extract_access_token(request.headers)
   try:
     claims = cognito_jwt_token.verify(access_token)
-    # authenicatied request
-    app.logger.debug("authenicated")
+    # authenticated request
+    app.logger.debug("authenticated")
     app.logger.debug(claims)
     cognito_user_id = claims['sub']
     model = Messages.run(
@@ -169,7 +169,7 @@ def data_messages(message_group_uuid):
     else:
       return model['data'], 200
   except TokenVerifyError as e:
-    # unauthenicatied request
+    # unauthenticated request
     app.logger.debug(e)
     return {}, 401
 
@@ -182,8 +182,8 @@ def data_create_message():
   access_token = extract_access_token(request.headers)
   try:
     claims = cognito_jwt_token.verify(access_token)
-    # authenicatied request
-    app.logger.debug("authenicated")
+    # authenticated request
+    app.logger.debug("authenticated")
     app.logger.debug(claims)
     cognito_user_id = claims['sub']
     if message_group_uuid == None:
@@ -218,13 +218,13 @@ def data_home():
   access_token = extract_access_token(request.headers)
   try:
     claims = cognito_jwt_token.verify(access_token)
-    # authenicatied request
-    app.logger.debug("authenicated")
+    # authenticated request
+    app.logger.debug("authenticated")
     app.logger.debug(claims)
     app.logger.debug(claims['username'])
     data = HomeActivities.run(cognito_user_id=claims['username'])
   except TokenVerifyError as e:
-    # unauthenicatied request
+    # unauthenticated request
     app.logger.debug(e)
     app.logger.debug("unauthenicated")
     data = HomeActivities.run()
