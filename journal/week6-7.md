@@ -6,14 +6,14 @@
 - [ ] Watch Fargate Technical Questions with Maish (Not yet uploaded)
 - [X] Provision ECS Cluster	
 - [X] Create ECR repo and push image for backend-flask	
-- [ ] Deploy Backend Flask app as a service to Fargate	
+- [X] Deploy Backend Flask app as a service to Fargate	
 - [ ] Create ECR repo and push image for fronted-react-js	
 - [ ] Deploy Frontend React JS app as a service to Fargate	
 - [ ] Provision and configure Application Load Balancer along with target groups	
 - [ ] Manage your domain using Route53 via hosted zone	
 - [ ] Create an SSL certificate via ACM	
-- [ ] Setup a record set for naked domain to point to frontend-react-js	
-- [ ] Setup a record set for api subdomain to point to the backend-flask	
+- [ ] Set up a record set for naked domain to point to frontend-react-js	
+- [ ] Set up a record set for api subdomain to point to the backend-flask	
 - [ ] Configure CORS to only permit traffic from our domain	
 - [ ] Secure Flask by not running in debug mode	
 - [ ] Implement Refresh Token for Amazon Cognito	
@@ -109,3 +109,30 @@ aws iam put-role-policy \
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchFullAccess --role-name CruddurTaskRole
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess --role-name CruddurTaskRole
 ```
+
+- Create a new task definition named `backend-flask` using the `backend-flask.json` file in `aws/task-definitions`
+- Create a new service named `backend-flask` using the `backend-flask-service.json` file in `aws/services`
+- Create a security group using the following commands:
+```shell
+
+export DEFAULT_VPC_ID=$(aws ec2 describe-vpcs \
+--filters "Name=isDefault, Values=true" \
+--query "Vpcs[0].VpcId" \
+--output text)
+echo $DEFAULT_VPC_ID
+
+export DEFAULT_SUBNET_IDS=$(aws ec2 describe-subnets  \
+ --filters Name=vpc-id,Values=$DEFAULT_VPC_ID \
+ --query 'Subnets[*].SubnetId' \
+ --output json | jq -r 'join(",")')
+echo $DEFAULT_SUBNET_IDS
+
+export CRUD_SERVICE_SG=$(aws ec2 create-security-group \
+  --group-name "crud-srv-sg" \
+  --description "Security group for Cruddur services on ECS" \
+  --vpc-id $DEFAULT_VPC_ID \
+  --query "GroupId" --output text)
+echo $CRUD_SERVICE_SG
+```
+- Add policy to `CruddurServiceExecutionRole` `CloudWatchFullAccess`
+- 
