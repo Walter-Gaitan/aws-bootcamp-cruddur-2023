@@ -114,7 +114,6 @@ aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AWSXRayDaemonWri
 - Create a new service named `backend-flask` using the `backend-flask-service.json` file in `aws/services`
 - Create a security group using the following commands:
 ```shell
-
 export DEFAULT_VPC_ID=$(aws ec2 describe-vpcs \
 --filters "Name=isDefault, Values=true" \
 --query "Vpcs[0].VpcId" \
@@ -134,5 +133,137 @@ export CRUD_SERVICE_SG=$(aws ec2 create-security-group \
   --query "GroupId" --output text)
 echo $CRUD_SERVICE_SG
 ```
-- Add policy to `CruddurServiceExecutionRole` `CloudWatchFullAccess`
-- 
+- Add policy  `CloudWatchFullAccess` to `CruddurServiceExecutionRole`
+
+After all of this, we can now create a new service using the `backend-flask-service.json` file in `aws/services` and then connect using 
+```shell
+aws ecs execute-command  \
+--region $AWS_DEFAULT_REGION \
+--cluster cruddur \
+--task [taskID] \
+--container backend-flask \
+--command "/bin/bash" \
+--interactive
+```
+- Edit security group to allow inbound traffic on port 4567 by using the following security group rules:
+```
+Type: PostgreSQL
+Protocol: TCP
+Port Range: 4567
+Source: Custom
+Custom: crud-srv-sg
+Description: CRUDDUR-SERVICES
+```
+- Access the service by going to the URL `http://[public-ip]:4567/api/activities/home` I got the following:
+```json
+[
+  {
+    "created_at": "2023-04-03T22:02:53.593648",
+    "display_name": null,
+    "expires_at": "2023-04-13T22:02:53.593648",
+    "handle": null,
+    "likes_count": 0,
+    "message": "This was imported as seed data!",
+    "replies_count": 0,
+    "reply_to_activity_uuid": null,
+    "reposts_count": 0,
+    "uuid": "2e3154fe-29cd-403f-8e55-1d16131d9002"
+  }
+]
+```
+#### Create an Application Load Balancer
+To set up the load balancer, it is necessary to go to EC2 > Load Balancers > Create Load Balancer 
+- Select Application Load Balancer
+- Select the VPC
+- Select the subnets
+- Create a new security group called `cruddur-alb-sg` with the following rules:
+```
+Type: HTTP
+Protocol: TCP
+Port Range: 80
+Source: Anywhere IPv4
+
+Type: HTTPS
+Protocol: TCP
+Port Range: 443
+Source: Anywhere IPv4
+
+Type: Custom TCP
+Protocol: TCP
+Port Range: 4567
+Source: Anywhere IPv4
+Description: TMP1
+
+Type: Custom TCP
+Protocol: TCP
+Port Range: 3000
+Source: Anywhere IPv4
+Description: TMP2
+```
+- Create security group for the load balancer
+- Add Inbound rule for `crud-srv-sg` security group to allow traffic for the load balancer with the following rules:
+```
+Type: Custom TCP
+Protocol: TCP
+Port Range: 0
+Source: Custom
+Custom: crud-alb-sg
+Description: CRUDDUR-ALB
+```
+- Create a new target group with the following rules:
+```
+Basic configuration: IP address
+Target Group Name: cruddur-backend-flask-tg
+Protocol: HTTP
+Port: 4567
+Health Check Path: /api/health-check
+Healthy Treshold: 3
+```
+- Leave Register Targets empty and click on Create
+- Add a Listener for the backend with the following rules:
+```
+Protocol: HTTP
+Port: 4567  
+Default Action: Forward to cruddur-backend-flask-tg
+```
+- Go back to the Load Balancer and add a new listener with the following rules:
+```
+Protocol: HTTP
+Port: 4567
+Default Action: Forward to cruddur-backend-flask-tg
+```
+- Create a new target group with the following rules:
+```
+Basic configuration: IP address
+Target Group Name: cruddur-frontend-react-js
+Protocol: HTTP
+Port: 3000
+Healthy Treshold: 3
+```
+- Leave Register Targets empty and click on Create
+- Add a Listener for the frontend with the following rules:
+```
+Protocol: HTTP
+Port: 3000
+Default Action: Forward to cruddur-frontend-react-js
+```
+- Create the Load Balancer
+
+#### Update the backend service to use the load balancer
+- Open the `backend-flask-service.json` file in `aws/json` and add the following lines:
+```json
+      "loadBalancers": [
+        {
+            "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-2:596027898727:targetgroup/cruddur-backend-flask-tg/21f4b1e69cc2369f",
+            "containerName": "backend-flask",
+            "containerPort": 4567
+        }
+    ],
+```
+- Delete the `backend-flask` service and create a new one using the `backend-flask-service.json` file in `aws/services` by using the following command:
+```shell
+aws ecs create-service --cli-input-json file://aws/json/service-backend-flask.json
+```
+
+
+### Deploy Frontend React app as a service to Fargate
