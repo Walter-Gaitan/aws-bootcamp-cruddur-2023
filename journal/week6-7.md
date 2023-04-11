@@ -3,13 +3,13 @@
 ## Table of Contents
 
 - [X] Watch ECS Security by Ashish
-- [ ] Watch Fargate Technical Questions with Maish (Not yet uploaded)
+- [ ] Watch Fargate Technical Questions with Maish
 - [X] Provision ECS Cluster	
 - [X] Create ECR repo and push image for backend-flask	
 - [X] Deploy Backend Flask app as a service to Fargate	
 - [ ] Create ECR repo and push image for fronted-react-js	
 - [ ] Deploy Frontend React JS app as a service to Fargate	
-- [ ] Provision and configure Application Load Balancer along with target groups	
+- [X] Provision and configure Application Load Balancer along with target groups	
 - [ ] Manage your domain using Route53 via hosted zone	
 - [ ] Create an SSL certificate via ACM	
 - [ ] Set up a record set for naked domain to point to frontend-react-js	
@@ -205,11 +205,12 @@ Description: TMP2
 ```
 Type: Custom TCP
 Protocol: TCP
-Port Range: 0
+Port Range: 4567
 Source: Custom
 Custom: crud-alb-sg
 Description: CRUDDUR-ALB
 ```
+- Make sure that all the security groups have `All traffic` outbound rule
 - Create a new target group with the following rules:
 ```
 Basic configuration: IP address
@@ -248,7 +249,37 @@ Port: 3000
 Default Action: Forward to cruddur-frontend-react-js
 ```
 - Create the Load Balancer
+- Select the Load Balancer and go to the `Attributes` tab
+- Add the following attributes:
+```
+Access Logs: Enabled
+S3 Bucket: cruddur-alb-logs-[account-id]
 
+```
+- For the new bucket, go to S3 and create a new bucket with the following rules:
+```
+Bucket name: cruddur-alb-access-logs-[account-id]
+Region: us-east-2
+Block public access: Select the first two options
+Check the box to acknowledge that the bucket will be public
+Create bucket
+```
+- Go to `Permissions` tab and click on `Bucket Policy` to add the following:
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::[elb-account-id]:root"
+      },
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::[bucket-name]/[prefix]/AWSLogs/[your-aws-account-id]/*"
+    }
+  ]
+}
+```
 #### Update the backend service to use the load balancer
 - Open the `backend-flask-service.json` file in `aws/json` and add the following lines:
 ```json
@@ -264,6 +295,8 @@ Default Action: Forward to cruddur-frontend-react-js
 ```shell
 aws ecs create-service --cli-input-json file://aws/json/service-backend-flask.json
 ```
-
+###  Create ECR repo and push image for fronted-react-js
+- Create a `Dockerfile.prod` file in the `frontend-react-js` 
 
 ### Deploy Frontend React app as a service to Fargate
+- In `aws/task-definitions` create a new file called `frontend-react-js-task-definition.json` 
