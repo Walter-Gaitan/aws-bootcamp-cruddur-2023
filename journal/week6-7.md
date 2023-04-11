@@ -7,8 +7,8 @@
 - [X] Provision ECS Cluster	
 - [X] Create ECR repo and push image for backend-flask	
 - [X] Deploy Backend Flask app as a service to Fargate	
-- [ ] Create ECR repo and push image for fronted-react-js	
-- [ ] Deploy Frontend React JS app as a service to Fargate	
+- [X] Create ECR repo and push image for fronted-react-js	
+- [X] Deploy Frontend React JS app as a service to Fargate	
 - [X] Provision and configure Application Load Balancer along with target groups	
 - [ ] Manage your domain using Route53 via hosted zone	
 - [ ] Create an SSL certificate via ACM	
@@ -303,7 +303,7 @@ aws ecs create-service --cli-input-json file://aws/json/service-backend-flask.js
 - Build the image by using the following command:
 ```shell
 docker build \
---build-arg REACT_APP_BACKEND_URL="http://cruddur-alb-1290862037.us-east-2.elb.amazonaws.com" \
+--build-arg REACT_APP_BACKEND_URL="http://cruddur-alb-1290862037.us-east-2.elb.amazonaws.com:4567" \
 --build-arg REACT_APP_AWS_PROJECT_REGION="$AWS_DEFAULT_REGION" \
 --build-arg REACT_APP_AWS_COGNITO_REGION="$AWS_DEFAULT_REGION" \
 --build-arg REACT_APP_AWS_USER_POOLS_ID="${REACT_APP_AWS_USER_POOLS_ID}" \
@@ -312,9 +312,31 @@ docker build \
 -f Dockerfile.prod \
 .
 ``` 
+- Tag the image by using the following command:
+```shell
+docker tag frontend-react-js:latest $ECR_FRONTEND_REACT_URL:latest
+```
+- Push the image to ECR by using the following command:
+```shell
+docker push $ECR_FRONTEND_REACT_URL:latest
+```
 
 ### Deploy Frontend React app as a service to Fargate
 - In `aws/task-definitions` create a new file called `frontend-react-js.json` 
 - Run `aws ecs register-task-definition --cli-input-json file://aws/task-definitions/frontend-react-js.json`
 - In `aws/json` create a new file called `service-frontend-react-js.json` 
 - Create service by running `aws ecs create-service --cli-input-json file://aws/json/service-frontend-react-js.json`
+![tasks](../_docs/assets/tasks.png)
+- Go to the Load Balancer and add a new listener with the following rules:
+```
+Protocol: Custom TCP'
+Port: 3000
+Source: sg-0f9f9f9f9f9f9f9f9/cruddur-alb-sg
+```
+
+### Manage your domain using Route53 via hosted zone	
+- Go to Route53 and create a new hosted zone with the following rules:
+```
+Domain name: app.cruddur.com
+Type: Public hosted zone
+```
