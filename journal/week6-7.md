@@ -296,7 +296,25 @@ Create bucket
 aws ecs create-service --cli-input-json file://aws/json/service-backend-flask.json
 ```
 ###  Create ECR repo and push image for fronted-react-js
-- Create a `Dockerfile.prod` file in the `frontend-react-js` 
+- Create a `Dockerfile.prod` file in the `frontend-react-js` folder
+- Add a `nginx.conf` file in the `frontend-react-js` folder
+- Modify the `ConfirmationPage.js` and `RecoverPage.js` to use `setErrors` instead of `SetCognitoErrors`
+- In the `frontend-react-js` folder, build the webpage by using `run npm build`
+- Build the image by using the following command:
+```shell
+docker build \
+--build-arg REACT_APP_BACKEND_URL="http://cruddur-alb-1290862037.us-east-2.elb.amazonaws.com" \
+--build-arg REACT_APP_AWS_PROJECT_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_COGNITO_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_USER_POOLS_ID="${REACT_APP_AWS_USER_POOLS_ID}" \
+--build-arg REACT_APP_CLIENT_ID="${AWS_COGNITO_APP_CLIENT_ID}" \
+-t frontend-react-js \
+-f Dockerfile.prod \
+.
+``` 
 
 ### Deploy Frontend React app as a service to Fargate
-- In `aws/task-definitions` create a new file called `frontend-react-js-task-definition.json` 
+- In `aws/task-definitions` create a new file called `frontend-react-js.json` 
+- Run `aws ecs register-task-definition --cli-input-json file://aws/task-definitions/frontend-react-js.json`
+- In `aws/json` create a new file called `service-frontend-react-js.json` 
+- Create service by running `aws ecs create-service --cli-input-json file://aws/json/service-frontend-react-js.json`
