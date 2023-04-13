@@ -44,8 +44,8 @@
         {"name": "OTEL_EXPORTER_OTLP_ENDPOINT", "value": "https://api.honeycomb.io"},
         {"name": "AWS_COGNITO_USER_POOL_ID", "value": "us-east-2_W3jYYMQEj"},
         {"name": "AWS_COGNITO_USER_POOL_CLIENT_ID", "value": "2co3nkd0rqprebc57hdqr3hrbh"},
-        {"name": "FRONTEND_URL", "value": "*"},
-        {"name": "BACKEND_URL", "value": "*"},
+        {"name": "FRONTEND_URL", "value": "https://waltergaitan.codes"},
+        {"name": "BACKEND_URL", "value": "https://api.waltergaitan.codes"},
         {"name": "AWS_DEFAULT_REGION", "value": "us-east-2"}
       ],
       "secrets": [

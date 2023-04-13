@@ -11,7 +11,7 @@
 - [X] Deploy Frontend React JS app as a service to Fargate	
 - [X] Provision and configure Application Load Balancer along with target groups	
 - [ ] Manage your domain using Route53 via hosted zone	
-- [ ] Create an SSL certificate via ACM	
+- [X] Create an SSL certificate via ACM	
 - [ ] Set up a record set for naked domain to point to frontend-react-js	
 - [ ] Set up a record set for api subdomain to point to the backend-flask	
 - [ ] Configure CORS to only permit traffic from our domain	
@@ -314,11 +314,12 @@ docker build \
 ``` 
 - Tag the image by using the following command:
 ```shell
-docker tag frontend-react-js:latest $ECR_FRONTEND_REACT_URL:latest
+docker tag frontend-react-js
+$ECR_FRONTEND_REACT_URL
 ```
 - Push the image to ECR by using the following command:
 ```shell
-docker push $ECR_FRONTEND_REACT_URL:latest
+docker push $ECR_FRONTEND_REACT_URL
 ```
 
 ### Deploy Frontend React app as a service to Fargate
@@ -337,6 +338,55 @@ Source: sg-0f9f9f9f9f9f9f9f9/cruddur-alb-sg
 ### Manage your domain using Route53 via hosted zone	
 - Go to Route53 and create a new hosted zone with the following rules:
 ```
-Domain name: app.cruddur.com
+Domain name: app.[yourdomain.com]
 Type: Public hosted zone
 ```
+- Copy your nameservers and go to your domain provider, depending on the provider, the options change, in my case, I am using Name.com, so I need to go to the `Manage` tab and click on `Nameservers` and then `Custom Nameservers` then I need to paste the nameservers and click on `Save Changes`
+
+
+### Create an SSL certificate via ACM
+- Go to ACM and create a new certificate with the following rules:
+```
+Domain name: [yourdomain.com]
+Domain name: *.[yourdomain.com]
+Validation method: DNS
+```
+- After that, you might need to wait a few minutes for the certificate to be validated
+- Go to the Load Balancer and add a new listener with the following rules:
+```
+Protocol: HTTP
+Port: 80
+Default Action: Redirect to HTTPS
+Port: 443
+```
+- Go to the Load Balancer and add a new listener with the following rules:
+```
+Protocol: HTTPS
+Port: 443
+Default Action: Forward to cruddur-frontend-react-js
+Choose the certificate you created
+```
+- Delete the listeners created in the previous steps for the target groups and click on `Save`
+- Go to the Load Balancer and click on `Listeners` and then `Manage Rules` to add the following rules:
+```
+Host header: api.[yourdomain.com]
+Target group: cruddur-backend-flask-tg
+```
+- In Route53, go to your hosted zone and click on `Create Record` and add the following rules:
+```
+Record name: api
+Record type: Load Balancer Alias
+Route traffic to: Alias to Application Load Balancer
+Region: us-east-2
+Load Balancer: dualstack.cruddur-alb-1290862037.us-east-2.elb.amazonaws.com
+Create records
+```
+
+#### Modify backend-flask task definition to use the new domain
+- Go to `aws/task-definitions` and open the `backend-flask.json` file
+- Modify the `FRONTEND_URL` environment variable to use the new domain to point to `[yourdomain.com]`
+- Do the same with `BACKEND_URL` environment variable to point to `api.[yourdomain.com]`
+- Run `aws ecs register-task-definition --cli-input-json file://aws/task-definitions/backend-flask.json`
+- Do the same with the `frontend-react-js.json` file and modify the `REACT_APP_BACKEND_URL` environment variable to point to `api.[yourdomain.com]`
+- Tag the new image and push it to ECR
+- In ECS, go to `Services` and update the `backend-flask` and `frontend-react-js` service 
