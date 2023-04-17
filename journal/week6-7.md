@@ -10,11 +10,11 @@
 - [X] Create ECR repo and push image for fronted-react-js	
 - [X] Deploy Frontend React JS app as a service to Fargate	
 - [X] Provision and configure Application Load Balancer along with target groups	
-- [ ] Manage your domain using Route53 via hosted zone	
+- [X] Manage your domain using Route53 via hosted zone	
 - [X] Create an SSL certificate via ACM	
-- [ ] Set up a record set for naked domain to point to frontend-react-js	
-- [ ] Set up a record set for api subdomain to point to the backend-flask	
-- [ ] Configure CORS to only permit traffic from our domain	
+- [X] Set up a record set for naked domain to point to frontend-react-js	
+- [X] Set up a record set for api subdomain to point to the backend-flask	
+- [X] Configure CORS to only permit traffic from our domain	
 - [ ] Secure Flask by not running in debug mode	
 - [ ] Implement Refresh Token for Amazon Cognito	
 - [ ] Refactor bin directory to be top level	
@@ -381,12 +381,26 @@ Region: us-east-2
 Load Balancer: dualstack.cruddur-alb-1290862037.us-east-2.elb.amazonaws.com
 Create records
 ```
-
-#### Modify backend-flask task definition to use the new domain
+### Set up a record set for naked domain to point to frontend-react-js
 - Go to `aws/task-definitions` and open the `backend-flask.json` file
 - Modify the `FRONTEND_URL` environment variable to use the new domain to point to `[yourdomain.com]`
 - Do the same with `BACKEND_URL` environment variable to point to `api.[yourdomain.com]`
 - Run `aws ecs register-task-definition --cli-input-json file://aws/task-definitions/backend-flask.json`
-- Do the same with the `frontend-react-js.json` file and modify the `REACT_APP_BACKEND_URL` environment variable to point to `api.[yourdomain.com]`
+
+### Set up a record set for api subdomain to point to the backend-flask
+- Do the same with the `frontend-react-js.json` file and modify the `REACT_APP_BACKEND_URL` environment variable to point to `api.[yourdomain.com]` like this:
+```shell
+docker build \
+--build-arg REACT_APP_BACKEND_URL="api.[yourdomain.com]" \
+--build-arg REACT_APP_AWS_PROJECT_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_COGNITO_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_USER_POOLS_ID="${REACT_APP_AWS_USER_POOLS_ID}" \
+--build-arg REACT_APP_CLIENT_ID="${AWS_COGNITO_APP_CLIENT_ID}" \
+-t frontend-react-js \
+-f Dockerfile.prod \
+.
+```
 - Tag the new image and push it to ECR
 - In ECS, go to `Services` and update the `backend-flask` and `frontend-react-js` service 
+
+### Secure Flask by not running in debug mode
