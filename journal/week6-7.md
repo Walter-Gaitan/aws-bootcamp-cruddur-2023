@@ -15,7 +15,7 @@
 - [X] Set up a record set for naked domain to point to frontend-react-js	
 - [X] Set up a record set for api subdomain to point to the backend-flask	
 - [X] Configure CORS to only permit traffic from our domain	
-- [ ] Secure Flask by not running in debug mode	
+- [X] Secure Flask by not running in debug mode	
 - [ ] Implement Refresh Token for Amazon Cognito	
 - [ ] Refactor bin directory to be top level	
 - [ ] Configure task definitions to contain x-ray and turn on Container Insights
@@ -404,3 +404,44 @@ docker build \
 - In ECS, go to `Services` and update the `backend-flask` and `frontend-react-js` service 
 
 ### Secure Flask by not running in debug mode
+- Create a `Dockerfile.prod` file and make sure to add the following:
+```dockerfile
+FROM 596027898727.dkr.ecr.us-east-2.amazonaws.com/cruddur-python:3.10-slim-buster
+
+# Inside Container
+# make a new folder inside container
+WORKDIR /backend-flask
+
+# Outside Container -> Inside Container
+# this contains the libraries want to install to run the app
+COPY requirements.txt requirements.txt
+
+# Inside Container
+# Install the python libraries used for the app
+RUN pip3 install -r requirements.txt
+
+# Outside Container -> Inside Container
+# . means everything in the current directory
+# first period . - /backend-flask (outside container)
+# second period . /backend-flask (inside container)
+COPY . .
+
+# Set Environment Variables (Env Vars)
+# Inside Container and wil remain set when the container is running
+ENV FLASK_DEBUG=1
+
+EXPOSE ${PORT}
+
+# CMD (Command)
+# python3 -m flask run --host=0.0.0.0 --port=4567
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567", "--no-debug", "--no-debugger", "--no-reload"]
+```
+
+#### Fix Messaging in Production
+- Add the following in line 82 for `db.py`:
+```python
+return "{}"
+```
+- Refactor multiple scripts and make sure that they point to the right direction, specially setup, seed, and schema load
+- Add scripts to kill all connections from DB, this is meant by use in development only
+- Restructure scripts to have a more organized view
