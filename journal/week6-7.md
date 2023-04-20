@@ -16,7 +16,7 @@
 - [X] Set up a record set for api subdomain to point to the backend-flask	
 - [X] Configure CORS to only permit traffic from our domain	
 - [X] Secure Flask by not running in debug mode	
-- [ ] Implement Refresh Token for Amazon Cognito	
+- [X] Implement Refresh Token for Amazon Cognito	
 - [ ] Refactor bin directory to be top level	
 - [ ] Configure task definitions to contain x-ray and turn on Container Insights
 - [ ] Change Docker Compose to explicitly use a user-defined network
@@ -437,11 +437,71 @@ EXPOSE ${PORT}
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567", "--no-debug", "--no-debugger", "--no-reload"]
 ```
 
-#### Fix Messaging in Production
+### Fix Messaging in Production
 - Add the following in line 82 for `db.py`:
 ```python
 return "{}"
 ```
 - Refactor multiple scripts and make sure that they point to the right direction, specially setup, seed, and schema load
 - Add scripts to kill all connections from DB, this is meant by use in development only
-- Restructure scripts to have a more organized view
+- Restructure scripts to have a more organized view 
+
+#### Update the `cognito_users_ids` table
+
+When using the messaging option, you have to make sure to update the `cognito_users_ids` since they have `MOCK` in production, to do that, you have to go to the `cognito_users` table and update the `cognito_user_id` to the one you have in the `cognito_users_ids` table. For this, I did the following:
+- Connect to the DB using `./bin/db/connect prod`
+- Run the following query to get the `cognito_user_id` from the `cognito_users` table:
+```sql
+SELECT * FROM users;
+```
+- I got the cognito_user_id from the `users` table by running `./bin/db/setup` in the `cruddur` database
+- Once I did that, I accessed the `cruddur` database and ran the following query to get the `cognito_user_id` from the `cognito_users` table:
+```sql
+SELECT * FROM cognito_users;
+```
+This is the result I got:
+```sql
+                 uuid                 | display_name  |    handle     |          email           | cognito_user_id  |  created_at         
+--------------------------------------+---------------+---------------+--------------------------+--------------------------------------+----------------------------
+ 450f601b-5a16-457a-a36d-20f06cf07cb2 | Walter Gaitan | waltergsteven | walterg.steven@gmail.com | MOCK             | 2023-04-19 16:09:07.046622
+ 8d7902b7-790c-4c39-8fae-1086ce79b32e | Andrew Brown  | andrewbrown   | andrew@exampro.co        | MOCK             | 2023-04-19 16:09:07.046622
+ f6088bcb-5ba8-4e62-843a-06c050979b16 | Andrew Bayko  | bayko         | bayko@exampro.co         | MOCK             | 2023-04-19 16:09:07.046622
+(3 rows)
+```
+- Run the following query to update the `cognito_user_id` in the `users` table:
+```sql
+UPDATE public.users 
+SET cognito_user_id = 
+  CASE 
+    WHEN handle = 'andrewbrown' THEN '[your-cognito-user-id]'
+    WHEN handle = 'bayko' THEN '[your-cognito-user-id]'
+  END
+WHERE handle IN ('andrewbrown', 'bayko');
+```
+- Once done, you can run the following query to verify that the `cognito_user_id` was updated:
+```sql
+SELECT * FROM users;
+```
+- This is the result I got:
+```sql
+                 uuid                 | display_name  |    handle     |          email           |           cognito_user_id            |         created_at         
+--------------------------------------+---------------+---------------+--------------------------+--------------------------------------+----------------------------
+ 450f601b-5a16-457a-a36d-20f06cf07cb2 | Walter Gaitan | waltergsteven | walterg.steven@gmail.com | MOCK                                 | 2023-04-19 16:09:07.046622
+ 8d7902b7-790c-4c39-8fae-1086ce79b32e | Andrew Brown  | andrewbrown   | andrew@exampro.co        | 7534a7af-a7e2-44df-aebe-44bd8240d449 | 2023-04-19 16:09:07.046622
+ f6088bcb-5ba8-4e62-843a-06c050979b16 | Andrew Bayko  | bayko         | bayko@exampro.co         | c10ce10e-599d-497c-8dc3-104498faee9a | 2023-04-19 16:09:07.046622
+(3 rows)
+```
+
+#### Check that messaging is working in production
+- Go to your frontend app and login with the `andrewbrown` user, or whichever user you want to use as long as it has a `cognito_user_id` in the `users` table
+- Go to `Messages`
+- In the address bar, add the following: `/new/[username]` where `[username]` is the username of the user you want to send a message to
+- You should see the following:
+- ![new-message](../_docs/assets/new-message.png)
+- Add a new message and click `Message`
+- You should see the following:
+- ![message-sent](../_docs/assets/message-sent.png)
+
+### Implement Refresh Token for Amazon Cognito	
+- The implementation will be done in the `frontend` app
+- Modify `CheckAuth` component to check if the token is expired and if it is, then refresh the token
