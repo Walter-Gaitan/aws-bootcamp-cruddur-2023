@@ -505,3 +505,8 @@ SELECT * FROM users;
 ### Implement Refresh Token for Amazon Cognito	
 - The implementation will be done in the `frontend` app
 - Modify `CheckAuth` component to check if the token is expired and if it is, then refresh the token
+- Modify the `MessageForm` to get the `AccessToken` from the `localStorage` and send it to the backend
+- Modify the `HomeFeedPage` to get the `AccessToken` from the `localStorage` and send it to the backend
+- Modify the `MessageGroupNewPage`, `MessageGroupPage`, and `MessageGroupsPage` to get the `AccessToken` from the `localStorage` and send it to the backend
+- The result should be the following:
+- ![refresh-token](../_docs/assets/refresh-token.png)
