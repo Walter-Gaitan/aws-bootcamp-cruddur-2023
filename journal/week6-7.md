@@ -17,7 +17,7 @@
 - [X] Configure CORS to only permit traffic from our domain	
 - [X] Secure Flask by not running in debug mode	
 - [X] Implement Refresh Token for Amazon Cognito	
-- [ ] Refactor bin directory to be top level	
+- [X] Refactor bin directory to be top level	
 - [ ] Configure task definitions to contain x-ray and turn on Container Insights
 - [ ] Change Docker Compose to explicitly use a user-defined network
 - [ ] Create Dockerfile specifically for production use case
@@ -463,8 +463,8 @@ This is the result I got:
 ```sql
                  uuid                 | display_name  |    handle     |          email           | cognito_user_id  |  created_at         
 --------------------------------------+---------------+---------------+--------------------------+--------------------------------------+----------------------------
- 450f601b-5a16-457a-a36d-20f06cf07cb2 | Walter Gaitan | waltergsteven | walterg.steven@gmail.com | MOCK             | 2023-04-19 16:09:07.046622
- 8d7902b7-790c-4c39-8fae-1086ce79b32e | Andrew Brown  | andrewbrown   | andrew@exampro.co        | MOCK             | 2023-04-19 16:09:07.046622
+ 450f601b-5a16-457a-a36d-20f06cf07cb2 | Andrew Brown | andrewbrown | walterg.steven@gmail.com | MOCK             | 2023-04-19 16:09:07.046622
+ 8d7902b7-790c-4c39-8fae-1086ce79b32e | Walter Gaitan  | waltergsteven   | andrew@exampro.co        | MOCK             | 2023-04-19 16:09:07.046622
  f6088bcb-5ba8-4e62-843a-06c050979b16 | Andrew Bayko  | bayko         | bayko@exampro.co         | MOCK             | 2023-04-19 16:09:07.046622
 (3 rows)
 ```
@@ -473,10 +473,10 @@ This is the result I got:
 UPDATE public.users 
 SET cognito_user_id = 
   CASE 
-    WHEN handle = 'andrewbrown' THEN '[your-cognito-user-id]'
+    WHEN handle = 'waltergsteven' THEN '[your-cognito-user-id]'
     WHEN handle = 'bayko' THEN '[your-cognito-user-id]'
   END
-WHERE handle IN ('andrewbrown', 'bayko');
+WHERE handle IN ('waltergsteven', 'bayko');
 ```
 - Once done, you can run the following query to verify that the `cognito_user_id` was updated:
 ```sql
@@ -487,13 +487,13 @@ SELECT * FROM users;
                  uuid                 | display_name  |    handle     |          email           |           cognito_user_id            |         created_at         
 --------------------------------------+---------------+---------------+--------------------------+--------------------------------------+----------------------------
  450f601b-5a16-457a-a36d-20f06cf07cb2 | Walter Gaitan | waltergsteven | walterg.steven@gmail.com | MOCK                                 | 2023-04-19 16:09:07.046622
- 8d7902b7-790c-4c39-8fae-1086ce79b32e | Andrew Brown  | andrewbrown   | andrew@exampro.co        | 7534a7af-a7e2-44df-aebe-44bd8240d449 | 2023-04-19 16:09:07.046622
+ 8d7902b7-790c-4c39-8fae-1086ce79b32e | Walter Gaitan  | waltergsteven   | andrew@exampro.co        | 7534a7af-a7e2-44df-aebe-44bd8240d449 | 2023-04-19 16:09:07.046622
  f6088bcb-5ba8-4e62-843a-06c050979b16 | Andrew Bayko  | bayko         | bayko@exampro.co         | c10ce10e-599d-497c-8dc3-104498faee9a | 2023-04-19 16:09:07.046622
 (3 rows)
 ```
 
 #### Check that messaging is working in production
-- Go to your frontend app and login with the `andrewbrown` user, or whichever user you want to use as long as it has a `cognito_user_id` in the `users` table
+- Go to your frontend app and login with the `waltergsteven` user, or whichever user you want to use as long as it has a `cognito_user_id` in the `users` table
 - Go to `Messages`
 - In the address bar, add the following: `/new/[username]` where `[username]` is the username of the user you want to send a message to
 - You should see the following:
@@ -502,11 +502,13 @@ SELECT * FROM users;
 - You should see the following:
 - ![message-sent](../_docs/assets/message-sent.png)
 
-### Implement Refresh Token for Amazon Cognito	
+### Implement Refresh Token for Amazon Cognito (Backend)
 - The implementation will be done in the `frontend` app
 - Modify `CheckAuth` component to check if the token is expired and if it is, then refresh the token
 - Modify the `MessageForm` to get the `AccessToken` from the `localStorage` and send it to the backend
 - Modify the `HomeFeedPage` to get the `AccessToken` from the `localStorage` and send it to the backend
 - Modify the `MessageGroupNewPage`, `MessageGroupPage`, and `MessageGroupsPage` to get the `AccessToken` from the `localStorage` and send it to the backend
 - The result should be the following:
-- ![refresh-token](../_docs/assets/refresh-token.png)
+![refresh-token](../_docs/assets/refresh-token.png)
+
+### Configure task definitions to contain x-ray and turn on Container Insights

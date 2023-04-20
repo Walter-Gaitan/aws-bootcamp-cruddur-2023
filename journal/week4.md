@@ -441,7 +441,7 @@ def lambda_handler(event, context):
 ```
 - This one is optional, but to make it more aligned with my repository, there is one line in `app.py` that needs to be modified in line 209:
 ```python
-  user_handle  = 'andrewbrown'
+  user_handle  = 'waltergsteven'
 ```
 - Change it to:
 ```python

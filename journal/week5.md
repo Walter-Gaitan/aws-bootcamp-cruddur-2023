@@ -60,7 +60,7 @@ backend-flask:
 - After all these changes, I ran `docker-compose up` and it worked, then updated the db using the script `db/setup` and it worked
 - I also updated the `ddb/schema-load` script to create the `ddb` database
 - I also updated the `ddb/seed` script to seed the `ddb` database
-- I had some issues with doing the schema load, so just make sure that you run `update_cognito_user_id` before running `schema-load` and that you have a username named `andrewbrown` in the `users` table or that you modified all the necessary files to your own username such as `ddb/seed`, `db/seed`, and `app.py`
+- I had some issues with doing the schema load, so just make sure that you run `update_cognito_user_id` before running `schema-load` and that you have a username named `waltergsteven` in the `users` table or that you modified all the necessary files to your own username such as `ddb/seed`, `db/seed`, and `app.py`
 - Once I did all the changes, I signed in and went to the `messages` page, and it showed the messages, so I was able to create a conversation and send a message to it.
 
 ### Implement DynamoDB Stream

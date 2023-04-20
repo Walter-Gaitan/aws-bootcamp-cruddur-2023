@@ -129,7 +129,7 @@ Finally, I checked that the logs were showing the messages I added in the `app.p
 
 ### Task 4 — Setup Rollbar
 
-After following the video from [Andrew Brown](https://www.youtube.com/watch?v=xMBDAb5SEU4&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=37)
+After following the video from [Walter Gaitan](https://www.youtube.com/watch?v=xMBDAb5SEU4&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=37)
 I was able to setup Rollbar and get the errors in the dashboard just by adding the following lines to the `app.py` file:
 ```python
 import rollbar
@@ -211,7 +211,7 @@ class UserActivities:
         now = datetime.now()
         results = [{
           'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
-          'handle':  'Andrew Brown',
+          'handle':  'Walter Gaitan',
           'message': 'Cloud is fun!',
           'created_at': (now - timedelta(days=1)).isoformat(),
           'expires_at': (now + timedelta(days=31)).isoformat()
