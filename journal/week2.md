@@ -117,11 +117,12 @@ Logger.info("HomeActivities")
 Once I used Capital L, it worked and started getting a JSON response.
 
 And the `app.py` file to add the following lines:
+
 ```python
 @app.route("/api/activities/home", methods=['GET'])
 def data_home():
-  data = HomeActivities.run(Logger=LOGGER)
-  return data, 200
+    data = HomeActivities.run
+    return data, 200
   ```
 
 Finally, I checked that the logs were showing the messages I added in the `app.py` file.
@@ -172,22 +173,25 @@ Finally, I successfully got the errors in the Rollbar dashboard.
 ### Task 5 — Setup Xray subsegment
 
 I added the following lines to the `app.py` file starting at Line 155:
+
 ```python
 @app.route("/api/activities/home", methods=['GET'])
 @xray_recorder.capture('activities_home')
 def data_home():
-  data = HomeActivities.run(Logger=LOGGER)
-  return data, 200
+    data = HomeActivities.run
+    return data, 200
+
 
 @app.route("/api/activities/@<string:handle>", methods=['GET'])
 @xray_recorder.capture('activities_users')
 def data_handle(handle):
 
+
 @app.route("/api/activities/<string:activity_uuid>", methods=['GET'])
 @xray_recorder.capture('activities_show')
 def data_show_activity(activity_uuid):
-  data = ShowActivity.run(activity_uuid=activity_uuid)
-  return data, 200
+    data = ShowActivity.run
+    return data, 200
 
 ```
 

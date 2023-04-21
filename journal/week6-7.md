@@ -512,3 +512,31 @@ SELECT * FROM users;
 ![refresh-token](../_docs/assets/refresh-token.png)
 
 ### Configure task definitions to contain x-ray and turn on Container Insights
+- Go to `backend-flask.json` and add the following:
+```json
+    {
+      "name": "xray",
+      "image": "public.ecr.aws/xray/aws-xray-daemon" ,
+      "essential": true,
+      "user": "1337",
+      "portMappings": [
+        {
+          "name": "xray",
+          "containerPort": 2000,
+          "protocol": "udp"
+        }
+      ]
+    },
+```
+- Create a register script for the `backend-flask` task definition as well as the `frontend` task definition
+- Now, it is time to recreate the task backend definition, as well as redeploy the service
+  - After a while, you should see the following in the backend tasks:
+  ![backend-xray](../_docs/assets/backend-xray.png)
+- The problem is that the health check is failing, so we need to modify the `backend-flask` task definition to add the `xray` container
+- Modify the `backend-flask.py` and comment the mock data 
+- Create a `run` script for the frontend
+
+#### Create environment files and delete them from docker-compose
+- Create a `generate-env` script for the `backend-flask` app
+- Create a `generate-env` script for the `frontend` app
+- 
