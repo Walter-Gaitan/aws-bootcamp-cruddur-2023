@@ -270,7 +270,7 @@ def data_activities():
 @app.route("/api/activities/<string:activity_uuid>", methods=['GET'])
 @xray_recorder.capture('activities_show')
 def data_show_activity(activity_uuid):
-  data = ShowActivity.run
+  data = ShowActivity.run(activity_uuid=activity_uuid)
   return data, 200
 
 @app.route("/api/activities/<string:activity_uuid>/reply", methods=['POST','OPTIONS'])
@@ -291,4 +291,4 @@ def data_users_short(handle):
   return data, 200
 
 if __name__ == "__main__":
-  app.run
+  app.run(debug=True)
