@@ -1,4 +1,4 @@
-FROM node:16.19.1-bullseye-slim
+FROM 596027898727.dkr.ecr.us-east-2.amazonaws.com/cruddur-node-js
 
 ENV PORT=3000
 

@@ -1,5 +1,5 @@
 # Base Image ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-FROM node:16.18 AS build
+FROM 596027898727.dkr.ecr.us-east-2.amazonaws.com/cruddur-node-js AS build
 
 ARG REACT_APP_BACKEND_URL
 ARG REACT_APP_AWS_PROJECT_REGION

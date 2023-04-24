@@ -3,7 +3,7 @@
 ## Table of Contents
 
 - [X] Watch ECS Security by Ashish
-- [ ] Watch Fargate Technical Questions with Maish
+- [X] Watch Fargate Technical Questions with Maish
 - [X] Provision ECS Cluster	
 - [X] Create ECR repo and push image for backend-flask	
 - [X] Deploy Backend Flask app as a service to Fargate	
@@ -18,10 +18,10 @@
 - [X] Secure Flask by not running in debug mode	
 - [X] Implement Refresh Token for Amazon Cognito	
 - [X] Refactor bin directory to be top level	
-- [ ] Configure task definitions to contain x-ray and turn on Container Insights
-- [ ] Change Docker Compose to explicitly use a user-defined network
-- [ ] Create Dockerfile specifically for production use case
-- [ ] Using ruby generate out env dot files for docker using erb templates
+- [X] Configure task definitions to contain x-ray and turn on Container Insights
+- [X] Change Docker Compose to explicitly use a user-defined network
+- [X] Create Dockerfile specifically for production use case
+- [X] Using ruby generate out env dot files for docker using erb templates
 
 ## Tasks
 
@@ -536,7 +536,28 @@ SELECT * FROM users;
 - Modify the `backend-flask.py` and comment the mock data 
 - Create a `run` script for the frontend
 
-#### Create environment files and delete them from docker-compose
+### Configure task definitions to contain x-ray and turn on Container Insights
+- Modify the `backend-flask` task definition to use the environment files
+- Modify the `frontend` task definition to use the environment files
+- Add X-Ray to the `frontend` task definition
+- Register and deploy the tasks definitions and services
+- Wait and check that the services are running
+- Finally, go to `Update Cluster` and enable `Container Insights`
+
+> Note: As of now, the `frontend` app is not sending the `AccessToken` to the backend, so the `xray` container is not showing any data
+
+### Watch Fargate Technical Questions with Maish Saidel-Keesing
+- During the video docker networking was discussed, best practices on deploying containers, and how to troubleshoot networking issues
+- Use cases for using bridge networking mode
+
+### Using ruby generate out env dot files for docker using erb templates
 - Create a `generate-env` script for the `backend-flask` app
 - Create a `generate-env` script for the `frontend` app
-- 
+- Create scripts to automatically generate the environment files for the `backend-flask` and `frontend` apps
+
+### Implement timezones in the frontend
+- Modify the `MessageGroupItem` to show the time in the user's timezone
+- Modify the `MessageItem` to show the time in the user's timezone
+- Create a `DateTimeFormat` component to format the date and time
+- Modify `seed.py` to add the `timezone` to the `users` table
+- Modify `ddb.py` to add the `timezone` to the `users` table
