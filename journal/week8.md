@@ -61,4 +61,10 @@ cdk deploy
 - Confirm that you want to deploy the stack by typing `y` and pressing enter
 - If the deployment was successful, you should be able to see the following output:
 ![cdk-deployed](../_docs/assets/cdk-deployed.png)
-- 
+- Create an event notification for the S3 bucket using the AWS console:
+```
+Event name: inputed-original-image-avatar
+Prefix: avatar/original/
+Object creation: Put, Post
+Destination: Lambda function
+```
