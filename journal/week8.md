@@ -25,7 +25,7 @@ This week we will be using the [Serverless Framework](https://serverless.com/) t
 
 ```bash
       npm install aws-cdk -g
-      cd thumbing-serverless-cdk
+      cd thumbing-avatar-cdk
       cp .env.example .env
       npm i
 ```
@@ -61,10 +61,82 @@ cdk deploy
 - Confirm that you want to deploy the stack by typing `y` and pressing enter
 - If the deployment was successful, you should be able to see the following output:
 ![cdk-deployed](../_docs/assets/cdk-deployed.png)
-- Create an event notification for the S3 bucket using the AWS console:
+- Install the process-image dependencies:
+```bash
+cd process-image
+npm i
+npm install -g aws-cdk
+npm i @aws-sdk/client-s3
 ```
-Event name: inputed-original-image-avatar
-Prefix: avatar/original/
-Object creation: Put, Post
-Destination: Lambda function
+- Install the node_modules for aws lambda:
+```bash
+npm install
+rm -rf node_modules/sharp
+SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install --arch=x64 --platform=linux --target=12.13.0 sharp
+```
+- Make sure that your bucket is already created in s3, if not, create it manually
+- Deploy the process-image stack:
+```bash
+cdk deploy
+```
+- In your assets bucket, create a folder `original` and `processed`
+- upload an image to the `original` folder called `data.jpg`
+- setup and env called DOMAIN_NAME in your environment variables
+
+### Serve Avatars via CloudFront
+- In your AWS console, go to CloudFront and create a new distribution
+```
+Origin Domain Name: <your-bucket-name>.s3.amazonaws.com
+Name: <your-bucket-name>
+Origin Access: Origin Access control setting
+```
+> **Note:** You must create a control setting to continue
+```
+Default Cache Behavior Settings: Use legacy cache settings
+Viewer Protocol Policy: Redirect HTTP to HTTPS
+Origin Request Policy: CORS-CustomOrigin
+Response Headers Policy: Simple CORS
+```
+- Create an ACM certificate in the us-east-1 region and validate it
+```
+Custom SSL Certificate: <your-certificate>
+Add a description: <your-certificate>
+```
+- You might need to wait a few minutes for the distribution to be deployed
+- Create a new record set in Route53
+```
+Name: assets.<your-domain-name>
+Type: A - IPv4 address'
+Route traffic to: Alias to CloudFront distribution
+```
+- Make sure that `data.jpg` is uploaded to the `original` folder in your bucket
+- Add the following policy to your bucket:
+```json
+{
+    "Version": "2008-10-17",
+    "Id": "PolicyForCloudFrontPrivateContent",
+    "Statement": [
+        {
+            "Sid": "AllowCloudFrontServicePrincipal",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "cloudfront.amazonaws.com"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::assets.waltergaitan.me/*",
+            "Condition": {
+                "StringEquals": {
+                  "AWS:SourceArn": "arn:aws:cloudfront::596027898727:distribution/ERP1HKKVALIMN"
+                }
+            }
+        }
+    ]
+}
+```
+- Change the `DOMAIN_NAME` in your `.env` file to the domain name of your CloudFront distribution
+- Modify your `thumbing-serverless-cdk-stack.ts` file to use your CloudFront distribution
+- Modify `serverless` folder to be `avatar` instead and modify the scripts as well
+- Upload file using script to test if it works
+```bash
+./bin/avatar/upload
 ```
