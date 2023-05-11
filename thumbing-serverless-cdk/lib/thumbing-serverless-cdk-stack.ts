@@ -35,10 +35,10 @@ export class ThumbingServerlessCdkStack extends cdk.Stack {
 
     // create a lambda
     const lambda = this.createLambda(
-      functionPath,
-      uploadsBucketName,
-      assetsBucketName,
-      folderInput,
+      functionPath, 
+      uploadsBucketName, 
+      assetsBucketName, 
+      folderInput, 
       folderOutput
     );
 
@@ -88,7 +88,7 @@ export class ThumbingServerlessCdkStack extends cdk.Stack {
       }
     });
     return lambdaFunction;
-  }
+  } 
 
   createS3NotifyToLambda(prefix: string, lambda: lambda.IFunction, bucket: s3.IBucket): void {
     const destination = new s3n.LambdaDestination(lambda);
@@ -130,7 +130,7 @@ export class ThumbingServerlessCdkStack extends cdk.Stack {
   createS3NotifyToSns(prefix: string, snsTopic: sns.ITopic, bucket: s3.IBucket): void {
     const destination = new s3n.SnsDestination(snsTopic)
     bucket.addEventNotification(
-      s3.EventType.OBJECT_CREATED_PUT,
+      s3.EventType.OBJECT_CREATED_PUT, 
       destination,
       {prefix: prefix}
     );
