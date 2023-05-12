@@ -55,9 +55,9 @@ tasks:
       cp .env.example .env
       npm i
   - name: generate envs
-    before: |
-      source  "$THEIA_WORKSPACE_ROOT/bin/backend/generate-env"
-      source  "$THEIA_WORKSPACE_ROOT/bin/frontend/generate-env"
+    command: |
+      $THEIA_WORKSPACE_ROOT/bin/backend/generate-env
+      $THEIA_WORKSPACE_ROOT/bin/frontend/generate-env
 vscode:
   extensions:
     - 42Crunch.vscode-openapi
