@@ -106,7 +106,7 @@ cors = CORS(
 
 # Rollbar ----------
 rollbar_access_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
-@app.before_first_request
+@app.before_request
 def init_rollbar():
     """init rollbar module"""
     rollbar.init(
@@ -238,7 +238,7 @@ def data_notifications():
 @app.route("/api/activities/@<string:handle>", methods=['GET'])
 #@xray_recorder.capture('activities_users')
 def data_handle(handle):
-  model = UserActivities.run
+  model = UserActivities.run(handle)
   if model['errors'] is not None:
     return model['errors'], 422
   else:
