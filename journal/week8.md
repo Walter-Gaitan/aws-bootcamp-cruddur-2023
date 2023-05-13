@@ -140,3 +140,44 @@ Route traffic to: Alias to CloudFront distribution
 ```bash
 ./bin/avatar/upload
 ```
+
+### Implement Users Profile Page
+- Create a new page called `ProfilePage` in the `pages` folder
+- Create a new component called `Profile` in the `components` folder
+- Create a new component called `Avatar` in the `components` folder
+- Make sure to upload the `data.jpg` file to your bucket folder `avatar`
+- Do the same for the banner image
+- Modify the `ProfilePage` to use the `Profile` component
+- Modify the Backend `Dockerfile` in the last line:
+```dockerfile
+CMD [ "python3", "-u", "-m", "flask", "run", "--host=0.0.0.0", "--port=4567", "--debug"]
+```
+- Modify your `app.py` file to use the new `ProfilePage` component and do the same for your `user_activities.py` file
+- Create a new sql file called `users` located in `db/sql` folder
+
+Once everything is done, you should be able to see the following:
+![profile-page](../_docs/assets/profile-page.png)
+> **Note:** Make sure that you don't have your adblocker enabled, otherwise you won't be able to see the banner image
+
+### Implement Migrations Backend Endpoint and Profile Form
+- Modify your `app.py` file to use the new `update_profile` endpoint
+- Create a migrations folder in your `db` folder
+- modify your schema to add the following columns:
+```sql
+UPDATE public.users 
+SET 
+  bio = %(bio)s,
+  display_name= %(display_name)s
+WHERE 
+  users.cognito_user_id = %(cognito_user_id)s
+RETURNING handle;
+```
+- Add a new `update.sql` file in your `sql/users` folder and modify your `show.sql` file to include the `users.bio`
+- Modify your `db.py` file to include the new `update` and `show` methods
+- Create a new `update_profile.py` file in your `backend` folder
+- Create a migrate function in `db` folder and create a `rollback` function as well
+- Create a new folder `bin/generate` and create a new file called `migration` and another one called `prepare`
+- Create a `Popup.css` file and import it to your `App.js` file
+- Also add a `ProfileForm.css` file and import it to your `ProfileForm.js` file which you need to create as well
+- Make some modifications to the `HomeFeedPage.js` imports 
+- Add a ProfileForm component to your `UserFeedPage.js` file

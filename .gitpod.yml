@@ -54,10 +54,6 @@ tasks:
       cd thumbing-serverless-cdk
       cp .env.example .env
       npm i
-  - name: generate envs
-    command: |
-      $THEIA_WORKSPACE_ROOT/bin/backend/generate-env
-      $THEIA_WORKSPACE_ROOT/bin/frontend/generate-env
 vscode:
   extensions:
     - 42Crunch.vscode-openapi
