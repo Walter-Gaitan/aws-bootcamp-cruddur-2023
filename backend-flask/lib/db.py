@@ -85,10 +85,9 @@ class Db:
           return "{}"
         else:
           return json[0]
-  def query_object_json(self,sql,params={},verbose=True):
+  def query_value(self,sql,params={},verbose=True):
     if verbose:
-      self.print_sql('json',sql,params)
-      self.print_params(params)
+      self.print_sql('value',sql,params)
 
     with self.pool.connection() as conn:
       with conn.cursor() as cur:
