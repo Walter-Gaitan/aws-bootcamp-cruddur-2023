@@ -181,3 +181,24 @@ RETURNING handle;
 - Also add a `ProfileForm.css` file and import it to your `ProfileForm.js` file which you need to create as well
 - Make some modifications to the `HomeFeedPage.js` imports 
 - Add a ProfileForm component to your `UserFeedPage.js` file
+
+### Implement Avatar Upload
+- Create a new Gemfile and Gemfile.lock for a new lambda
+- Create a folder called `lambda-authorizer` and create and index.js, package.json and package-lock.json file
+- Create a new policy for the avatar upload 
+- Modify the components for Profileform
+- Build an http API for the avatar upload
+```
+Lambda
+AWS Region: [your-region]
+Lambda Function: avatar-upload
+API name: cruddur.com
+```
+- Create a new lambda function called `CruddurAvatarUpload` and create a new http API
+```
+Function name: CruddurAvatarUpload
+Runtime: Ruby 2.7
+Execution role: Create a new role with basic Lambda permissions
+```
+- Copy your `function.rb` file to your lambda function
+- do a bundle install 

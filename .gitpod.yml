@@ -24,6 +24,7 @@ tasks:
           echo "AWS CLI is already installed."
           aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
       fi
+          bash bin/ecr/login
   - name: postgres
     before: |
       curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
@@ -34,10 +35,12 @@ tasks:
       source "$THEIA_WORKSPACE_ROOT/bin/rds/update-sg-rule"
   - name: react-js
     command: |
+      ruby $THEIA_WORKSPACE_ROOT/bin/frontend/generate-env
       cd frontend-react-js
       npm i
   - name: flask
     command: |
+      ruby $THEIA_WORKSPACE_ROOT/bin/backend/generate-env
       cd backend-flask
       pip install -r requirements.txt
   - name: fargate
