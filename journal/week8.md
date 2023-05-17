@@ -191,8 +191,11 @@ RETURNING handle;
 ```
 Lambda
 AWS Region: [your-region]
-Lambda Function: avatar-upload
-API name: cruddur.com
+Lambda Function: CruddurAvatarUpload
+API name: api.[your-domain-name]
+Next
+Method: GET 
+Resource path: /avatars/key_upload
 ```
 - Create a new lambda function called `CruddurAvatarUpload` and create a new http API
 ```
@@ -202,3 +205,32 @@ Execution role: Create a new role with basic Lambda permissions
 ```
 - Copy your `function.rb` file to your lambda function
 - do a bundle install 
+- After the bundle exec ruby function.rb you will get a URL that you are going to paste in a client like postman or in this case, Thunder Client 
+- Create a PUT request an upload the jpg image in your folder 
+- Go to CruddurAvatarUpload and attach a permission to add a PresignUrl
+- Attach your s3 bucket
+- Name it PresignedUrlAvatarPolicy
+- add env to lambda
+- test your lambda code
+- change the name of the handler to function.handler
+ 
+#### Create the lambda authorizer
+- Create a new package.json file and run npm install inside a folder called `lambda-authorizer`
+- create an index.js file and copy the code from the lambda authorizer
+- Zip the folder and upload it to a new lambda function `CruddurApiGatewayLambdaAuthorizer`
+- Go to Develop > Authorization in your API Gateway and create a new authorizer
+```
+Name: CruddurJWTAuthorizer
+Authorizer type: Lambda
+Lambda function: CruddurApiGatewayLambdaAuthorizer
+Response model: Simple
+Authorizer caching: turned off
+```
+- Go to attach authorizer to routes and attach it to the route you just created
+- Configure CORS in API Gateway
+```
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: POST
+Access-Control-Allow-Credentials: false 
+```
+- Add cross_origin (CORS) to allow the lambda authorizer to upload files, just copy the `cors.json` file
