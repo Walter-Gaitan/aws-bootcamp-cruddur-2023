@@ -13,5 +13,5 @@ BACKEND_FLASK_PATH="$PROJECT_PATH/backend-flask"
 kill_path="$BACKEND_FLASK_PATH/db/kill-all-connections.sql"
 echo $kill_path
 
-psql $CONNECTION_URL cruddur < $kill_path
+psql $LOCAL_CONNECTION_URL cruddur < $kill_path
 
