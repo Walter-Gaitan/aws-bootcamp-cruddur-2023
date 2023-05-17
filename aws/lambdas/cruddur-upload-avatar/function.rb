@@ -22,7 +22,7 @@ def handler(event:, context:)
     body_hash = JSON.parse(event["body"])
     extension = body_hash["extension"]
 
-    decoded_token = JWT.decode token, nil, false
+    decoded_token = JWT.decode token, nil, false`
     cognito_user_uuid = decoded_token[0]['sub']
 
     s3 = Aws::S3::Resource.new
