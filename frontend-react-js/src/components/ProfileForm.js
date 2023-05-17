@@ -71,7 +71,7 @@ export default function ProfileForm(props) {
   const onsubmit = async (event) => {
     event.preventDefault();
     try {
-      const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/profile/update`
+      const backend_url = `https://4567-waltergaita-awsbootcamp-foyhsp6x9o7.ws-us97.gitpod.io/api/profile/update`
       await getAccessToken()
       const access_token = localStorage.getItem("access_token")
       const res = await fetch(backend_url, {
