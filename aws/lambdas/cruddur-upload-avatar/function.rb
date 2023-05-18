@@ -38,7 +38,7 @@ def handler(event:, context:)
     {
       headers: {
         "Access-Control-Allow-Headers": "*, Authorization",
-        "Access-Control-Allow-Origin": "https:ampc//3000-waltergaita-awsbootcamp-ywwzngpl9pe.ws-us97.gitpod.io",
+        "Access-Control-Allow-Origin": "https://3000-waltergaita-awsbootcamp-ywwzngpl9pe.ws-us97.gitpod.io",
         "Access-Control-Allow-Methods": "OPTIONS,GET,POST"
       },
       statusCode: 200,
